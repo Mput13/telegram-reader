@@ -174,10 +174,32 @@ describe('self-serve signup', () => {
     expect(email).toMatchObject({ email: 'alice@example.com', inviteKey: `invite:${await sha256Hex(invite)}` });
 
     expect((await confirm(e, 'alice@example.com', code)).status).toBe(410);
-    expect((await ask(e, 'alice@example.com', '198.51.100.8')).status).toBe(409);
     // A few logins, so a failed QR scan or a wrong 2FA password doesn't burn the invite
     for (let i = 0; i < 3; i++) expect((await handle(post({ invite }), e)).status).toBe(200);
     expect((await handle(post({ invite }), e)).status).toBe(429);
+  });
+
+  it('replaces the invite when the same email asks again, unless it was revoked', async () => {
+    const { e, store, mails } = await open();
+    const issue = async (at: Date) => {
+      expect((await ask(e, 'a@b.co', undefined, at)).status).toBe(202);
+      const res = await confirm(e, 'a@b.co', codeOf(mails), at);
+      expect(res.status).toBe(201);
+      return ((await res.json()) as { invite: string }).invite;
+    };
+    const first = await issue(NOW);
+    const second = await issue(later(61_000));
+    expect(second).not.toBe(first);
+    expect(keysBesides(store).filter(k => k.startsWith('invite:'))).toEqual([`invite:${await sha256Hex(second)}`]);
+    expect((await handle(post({ invite: first }), e)).status).toBe(403);
+    expect((await handle(post({ invite: second }), e)).status).toBe(200);
+
+    const key = `invite:${await sha256Hex(second)}`;
+    store.set(key, JSON.stringify({ ...JSON.parse(store.get(key)!), revoked: true }));
+    const refused = await ask(e, 'a@b.co', undefined, later(122_000));
+    expect(refused.status).toBe(409);
+    expect(await refused.json()).toEqual({ error: 'email_used' });
+    expect(mails).toHaveLength(2);
   });
 
   it('burns the code after five wrong tries', async () => {

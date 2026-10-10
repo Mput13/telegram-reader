@@ -1,6 +1,7 @@
 /**
  * Self-serve invites: the page at / trades a verified email (kept only for notifications) for a
- * one-login invite: a six-digit code goes to the address, and only the code gets the invite. This hands the maintainer's app keys to strangers, so every guard fails closed:
+ * one-login invite: a six-digit code goes to the address, and only the code gets the invite. Asking
+ * again with the same address replaces the invite (a lost token, a session Telegram ended). This hands the maintainer's app keys to strangers, so every guard fails closed:
  * signups are off unless KV `config:signups` is "on", Turnstile must pass server-side, and there
  * are per-IP, per-email and daily caps (Worker secrets, see LIMIT_DEFAULTS). `invite.mjs signups off` closes the page; `/v1/credentials` and
  * invites already issued keep working.
@@ -91,6 +92,18 @@ async function readJson<T>(request: Request): Promise<T | null> {
   try { return (await request.json()) as T; } catch { return null; }
 }
 
+/**
+ * The invite this email already holds, if any. A revoked one stays a refusal: the maintainer
+ * switched it off, and a new code must not undo that.
+ */
+async function previousInvite(env: Env, emailKey: string): Promise<{ key?: string; revoked?: boolean }> {
+  const raw = await env.INVITES.get(emailKey);
+  if (!raw) return {};
+  const key = (JSON.parse(raw) as EmailRecord).inviteKey;
+  const invite = await env.INVITES.get(key);
+  return { key, revoked: invite ? (JSON.parse(invite) as Invite).revoked === true : false };
+}
+
 /** Shared gate for both steps: method, per-IP limiter, and signups open and fully configured. */
 async function gate(request: Request, env: Env): Promise<Response | null> {
   if (request.method !== 'POST') return json(405, { error: 'method_not_allowed' });
@@ -136,7 +149,7 @@ export async function handleSignup(request: Request, env: Env, now = new Date(),
   if (!(await verify(env.TURNSTILE_SECRET!, body.turnstile, ip))) return json(403, { error: 'captcha_failed' });
 
   const id = await sha256Hex(email);
-  if (await env.INVITES.get(`email:${id}`)) return json(409, { error: 'email_used' });
+  if ((await previousInvite(env, `email:${id}`)).revoked) return json(409, { error: 'email_used' });
   const pending = await env.INVITES.get(`verify:${id}`);
   if (pending && now.getTime() - Date.parse((JSON.parse(pending) as PendingCode).sentAt) < RESEND_AFTER_MS) {
     return json(429, { error: 'resend_wait' });
@@ -161,7 +174,7 @@ export async function handleSignup(request: Request, env: Env, now = new Date(),
   return json(202, { status: 'code_sent' });
 }
 
-/** Step 2: email + code → the one-login invite. Five wrong codes burn the pending code. */
+/** Step 2: email + code → the one-login invite, replacing an earlier one. Five wrong codes burn the pending code. */
 export async function handleVerify(request: Request, env: Env, now = new Date()): Promise<Response> {
   const closed = await gate(request, env);
   if (closed) return closed;
@@ -190,7 +203,8 @@ export async function handleVerify(request: Request, env: Env, now = new Date())
   await env.INVITES.delete(verifyKey);
 
   const emailKey = `email:${id}`;
-  if (await env.INVITES.get(emailKey)) return json(409, { error: 'email_used' });
+  const previous = await previousInvite(env, emailKey);
+  if (previous.revoked) return json(409, { error: 'email_used' });
   const day = now.toISOString().slice(0, 10);
   if (!(await bump(env, `count:day:${day}`, limit(env, 'SIGNUP_DAILY_CAP')))) return json(429, { error: 'daily_limit' });
 
@@ -199,6 +213,8 @@ export async function handleVerify(request: Request, env: Env, now = new Date())
   const createdAt = now.toISOString();
   const invite: SelfServeInvite = { name: email, createdAt, uses: 0, maxUses: SELF_SERVE_LOGINS, source: 'self-serve' };
   await env.INVITES.put(inviteKey, JSON.stringify(invite));
+  // One email, one working invite: the new one replaces the old
+  if (previous.key) await env.INVITES.delete(previous.key);
   const record: EmailRecord = { email, inviteKey, createdAt, lang: pending.lang ?? 'en' };
   await env.INVITES.put(emailKey, JSON.stringify(record));
   return json(201, { invite: token });
