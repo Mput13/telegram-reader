@@ -94,14 +94,15 @@ async function readJson<T>(request: Request): Promise<T | null> {
 
 /**
  * The invite this email already holds, if any. A revoked one stays a refusal: the maintainer
- * switched it off, and a new code must not undo that.
+ * switched it off, and a new code must not undo that. So does one whose record is gone (deleted by
+ * hand, or a stale KV read right after a re-issue), since it can't be shown to be unrevoked.
  */
 async function previousInvite(env: Env, emailKey: string): Promise<{ key?: string; revoked?: boolean }> {
   const raw = await env.INVITES.get(emailKey);
   if (!raw) return {};
   const key = (JSON.parse(raw) as EmailRecord).inviteKey;
   const invite = await env.INVITES.get(key);
-  return { key, revoked: invite ? (JSON.parse(invite) as Invite).revoked === true : false };
+  return { key, revoked: !invite || (JSON.parse(invite) as Invite).revoked === true };
 }
 
 /** Shared gate for both steps: method, per-IP limiter, and signups open and fully configured. */

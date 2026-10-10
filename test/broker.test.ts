@@ -200,6 +200,23 @@ describe('self-serve signup', () => {
     expect(refused.status).toBe(409);
     expect(await refused.json()).toEqual({ error: 'email_used' });
     expect(mails).toHaveLength(2);
+
+    // A missing invite record can't be shown to be unrevoked, so it refuses too
+    store.delete(key);
+    expect((await ask(e, 'a@b.co', undefined, later(183_000))).status).toBe(409);
+    expect(mails).toHaveLength(2);
+  });
+
+  it('refuses the code as well when the invite was revoked after the code went out', async () => {
+    const { e, store, mails } = await open();
+    await ask(e, 'a@b.co');
+    const { invite } = (await (await confirm(e, 'a@b.co', codeOf(mails))).json()) as { invite: string };
+    expect((await ask(e, 'a@b.co', undefined, later(61_000))).status).toBe(202);
+    const key = `invite:${await sha256Hex(invite)}`;
+    store.set(key, JSON.stringify({ ...JSON.parse(store.get(key)!), revoked: true }));
+    const res = await confirm(e, 'a@b.co', codeOf(mails), later(62_000));
+    expect(res.status).toBe(409);
+    expect(keysBesides(store).filter(k => k.startsWith('invite:'))).toEqual([key]);
   });
 
   it('burns the code after five wrong tries', async () => {
