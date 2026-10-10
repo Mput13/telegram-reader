@@ -64,7 +64,7 @@ function logCall(msg: Json, status: string): void {
 export type RpcReply = { status: number; body?: unknown };
 
 /**
- * One MCP request body in, one HTTP-style answer out: the part shared by `--http` and `--remote`.
+ * One MCP request body in, one HTTP-style answer out.
  * Calls run one at a time, like over stdio: parallel sessions steal updates and invite FLOOD_WAIT.
  */
 export function createRpcProcessor(options: { readOnly?: boolean } = {}, run?: Parameters<typeof handleMessage>[1]) {

@@ -65,36 +65,6 @@ and the bearer token can read your chats, and can write while write access is on
 - Requests from browsers (anything with an `Origin` header) are refused. Each call is logged to
   stderr without its arguments.
 
-## Hosted relay (`telegram mcp --remote`)
-
-Apps that connect to MCP by URL (claude.ai, ChatGPT) reach your computer through the relay at
-`mcp.better-tg-cli.com`, a Cloudflare Worker whose code is [`relay/`](relay/). The session stays on
-your computer; `telegram mcp --remote` opens an outbound WebSocket to the relay and runs each request
-locally, with the same write guard and audit log as any other MCP call.
-
-- **Who can connect:** an app gets access only with a one-time code and your yes in a dialog on your
-  computer, which names the app, says whether its name is verified, and where access goes. The code
-  is either mailed to the email you linked (`telegram remote email`: 6 digits, 10 minutes, one use,
-  five tries) or printed in your terminal (`telegram remote pair`: 8 characters, 10 minutes, one use).
-  Codes are mailed only to an address a computer has linked and confirmed, at most one a minute, and
-  the page looks the same for any address. Someone with your mailbox still can't connect an app
-  without the dialog on your computer.
-  On macOS and Windows the dialog is used even when a terminal is attached, because an agent can
-  type into a terminal (for example with `tmux send-keys`). On Linux the question is a terminal
-  prompt, so run `--remote` where only you can type. Each question and its answer is logged to
-  stderr.
-- **What the relay sees:** requests and replies, including message text, pass through the relay
-  in plaintext. TLS ends at the Worker, and end-to-end encryption to a cloud model isn't possible.
-  It doesn't log or store them (logging is off). It stores OAuth grants (tokens only as hashes),
-  each app's name and approval time, your linked email, and codes (as hashes) for 10 minutes.
-- **Your device key** (`tgrd_…`) is this computer's identity at the relay. It lives in your secret
-  store and travels only in a request header. Whoever has it can receive requests meant for your
-  computer, though not your session. If it leaks, run `telegram remote reset`, which disconnects
-  every app and makes a new key.
-- **Revoking:** `telegram remote clients` and `telegram remote revoke <id>|--all`. Access tokens last
-  an hour; an app unused for 30 days has to connect again.
-- **Writes** still need `write-access on` on your computer; `--read-only` removes the write tool.
-
 ## Known limits
 
 - Any process running as your user can read the Keychain or Secret Service item through `/usr/bin/security` or `secret-tool`,

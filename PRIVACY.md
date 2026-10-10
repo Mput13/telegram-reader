@@ -1,7 +1,7 @@
 # Privacy
 
 better-tg-cli is a local program. It collects no analytics, and apart from the optional invite service
-and the optional relay there are no servers of ours in the path. Nobody but you sees your messages or your session.
+there are no servers of ours in the path. Nobody but you sees your messages or your session.
 
 ## Network connections
 
@@ -10,7 +10,6 @@ and the optional relay there are no servers of ours in the path. Nobody but you 
 | Telegram (MTProto data centers) | Every command | Everything a Telegram client sends, directly to Telegram |
 | `registry.npmjs.org` | Once a day, only when run in a terminal (never for agents or pipes) | A request for the latest version number. Turn it off with `TG_NO_UPDATE_CHECK=1` |
 | The invite service (`tg-cli-broker…workers.dev`, same service as `better-tg-cli.com`) | Only when you log in with an invite (`telegram auth --invite` or `telegram onboard`) | Your invite token, once, to receive the app's API keys |
-| The relay (`mcp.better-tg-cli.com`) | Only while `telegram mcp --remote` runs, and for `telegram remote …` | Your device key in a header; the MCP requests of apps you connected and this computer's answers to them, including message text |
 
 The invite service stores invites by their SHA-256 hash with a use counter and never stores raw
 tokens. Its request logging is off. It never sees your phone number, login code, session or
@@ -21,14 +20,6 @@ lowercased, next to that invite, with the page language (English, Spanish or Rus
 come in that language. The email is used only to notify you about important updates or
 revoked keys. It is never shared or used for marketing. Ask in a GitHub issue to have it deleted.
 The page checks for bots with Cloudflare Turnstile.
-
-The relay passes MCP requests and answers between apps you connected (claude.ai, ChatGPT) and your
-computer. It doesn't log or store them. It stores what OAuth needs: grants with tokens only as
-hashes, each app's name, domain and approval time, and codes for 10 minutes. If you link an email
-(`telegram remote email`), it keeps that address to mail you sign-in codes, sends them through
-Cloudflare Email Sending, and uses it for nothing else. `telegram remote email --remove` deletes it.
-`telegram remote reset` disconnects every app. Those apps' own providers then hold what they
-received, under their terms.
 
 ## Data on your machine
 

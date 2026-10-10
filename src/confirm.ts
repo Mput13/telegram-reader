@@ -8,17 +8,11 @@ import chalk from './colors.js';
 /**
  * Some decisions must be a human's, not something an agent can make on its own: a y/N prompt on a
  * real terminal, or a macOS / Windows dialog the user has to click. Both give up as "no".
- *
- * `preferDialog` puts the dialog first even when a terminal is attached. A long-running process
- * (`telegram mcp --remote`) usually sits in tmux, where an agent could type "y" into the prompt
- * with `tmux send-keys`; a system dialog it can't answer. Linux has no dialog here, so it keeps
- * the terminal prompt.
  */
-export async function confirmByHuman(what: string, options: { preferDialog?: boolean } = {}): Promise<boolean> {
+export async function confirmByHuman(what: string): Promise<boolean> {
   const os = platform();
-  const hasDialog = os === 'darwin' || os === 'win32';
   const hasTty = Boolean(process.stdin.isTTY && process.stdout.isTTY);
-  if (hasTty && !(options.preferDialog && hasDialog)) {
+  if (hasTty) {
     const answer = await prompt(`${what} [y/N] `);
     return /^(y|yes|д|да)$/i.test(answer);
   }

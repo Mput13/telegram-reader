@@ -127,12 +127,6 @@ Buttons that need 2FA take `--password`. `--no-wait` skips waiting for the bot's
   `POST /mcp` (stateless, JSON responses) for remote hosts such as Grok Bot. Every request needs
   `Authorization: Bearer <token>` (`telegram mcp --token`, `--rotate-token`). Requests with an
   `Origin` header are refused. `--read-only` drops `telegram_write` (also works over stdio).
-- **Relay:** `telegram mcp --remote` connects this computer to the hosted relay
-  (`https://mcp.better-tg-cli.com/mcp`) for claude.ai, ChatGPT and other apps that connect by URL.
-  The user links an email once (`telegram remote email`) or pairs with `telegram remote pair`, and
-  confirms each app in a dialog; never do any of these for them. `telegram remote clients|revoke|reset`
-  manage connected apps. `remote` is not
-  available over MCP.
 
 ## Chat identifiers
 

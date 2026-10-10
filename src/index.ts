@@ -7,7 +7,6 @@ import { Command } from 'commander';
 import { profile } from './paths.js';
 import { startMcpServer } from './mcp.js';
 import { mcpToken, startMcpHttpServer } from './mcp-http.js';
-import { runRemote } from './remote.js';
 import { BACKGROUND_CHECK_COMMAND, maybeNotifyUpdate, runBackgroundCheck } from './update.js';
 import {
   authCommand,
@@ -77,7 +76,6 @@ import {
   watchCommand,
   updateCommand,
   skillCommand,
-  remoteCommand,
   onboardCommand,
 } from './commands/index.js';
 
@@ -170,18 +168,16 @@ program.addCommand(syncCommand);
 program.addCommand(downloadCommand);
 program.addCommand(updateCommand);
 program.addCommand(skillCommand);
-program.addCommand(remoteCommand);
 program
   .command('mcp')
-  .description('Run as an MCP server over stdio, over HTTP with --http, or through the hosted relay with --remote (tools: telegram_help, telegram_read, telegram_write)')
+  .description('Run as an MCP server over stdio, or over HTTP with --http (tools: telegram_help, telegram_read, telegram_write)')
   .option('--http', 'Serve MCP over HTTP (POST /mcp, bearer token) for remote hosts such as Grok Bot')
-  .option('--remote', 'Connect to the hosted relay so apps such as claude.ai and ChatGPT reach this computer (see `telegram remote`)')
   .option('--host <host>', 'With --http: address to listen on', '127.0.0.1')
   .option('--port <port>', 'With --http: port to listen on', '8787')
   .option('--read-only', 'Serve only telegram_help and telegram_read, never telegram_write')
   .option('--token', 'Print the HTTP bearer token (created on first use, kept in the secret store)')
   .option('--rotate-token', 'Replace the HTTP bearer token; clients using the old one stop working')
-  .action((options: { http?: boolean; remote?: boolean; host: string; port: string; readOnly?: boolean; token?: boolean; rotateToken?: boolean }) => {
+  .action((options: { http?: boolean; host: string; port: string; readOnly?: boolean; token?: boolean; rotateToken?: boolean }) => {
     const commands = program.commands.map(c => c.name());
     if (options.token || options.rotateToken) {
       const token = mcpToken({ create: true, rotate: options.rotateToken });
@@ -190,10 +186,6 @@ program
         process.exit(1);
       }
       console.log(token);
-      return;
-    }
-    if (options.remote) {
-      void runRemote(commands, { readOnly: options.readOnly });
       return;
     }
     if (options.http) {

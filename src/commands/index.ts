@@ -50,4 +50,3 @@ export { contactsCommand } from './contacts.js';
 export { updateCommand } from './update.js';
 export { skillCommand } from './skill.js';
 export { onboardCommand } from './onboard.js';
-export { remoteCommand } from './remote.js';

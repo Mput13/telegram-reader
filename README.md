@@ -103,7 +103,6 @@ Every channel ships the same version from one release:
 | Gemini CLI extension | skill and MCP server | `gemini extensions install https://github.com/TheVilfer/better-tg-cli` |
 | Cursor, VS Code | MCP server | [one-click buttons](#mcp-server) |
 | Grok Bot | MCP server over HTTP from your Mac | [see below](#grok-bot-remote-mcp-over-http) |
-| claude.ai, ChatGPT and other apps that connect by URL | MCP through the hosted relay, session stays on your computer | [see below](#claudeai-chatgpt-and-other-apps-hosted-relay) |
 | The CLI itself | agent skill for Claude Code, Codex, Cursor, Gemini CLI and 7 more | `telegram skill install` |
 | [skills.sh](https://skills.sh) | agent skill for any shell agent | `npx skills add TheVilfer/better-tg-cli` |
 | [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=better-tg-cli) | MCP server entry `io.github.TheVilfer/better-tg-cli` | through your MCP client |
@@ -275,30 +274,6 @@ tunnel URL plus `/mcp` (for example `https://<machine>.<tailnet>.ts.net/mcp`) an
 `Authorization: Bearer <token>`. `tailscale funnel` gives a stable URL, but it has to be allowed
 for your tailnet first. A `cloudflared` quick tunnel gets a new URL on every start. Read "Remote
 MCP over HTTP" in [SECURITY.md](SECURITY.md) first.
-
-### claude.ai, ChatGPT and other apps (hosted relay)
-
-claude.ai (web and mobile), ChatGPT and other apps that add MCP servers by URL sign in with OAuth
-and can't start a local program. The hosted relay at `https://mcp.better-tg-cli.com/mcp` connects
-them to `telegram mcp --remote` on your computer, which keeps the session, the write guard and the
-audit log. No tunnel, no token to paste.
-
-```bash
-telegram mcp --remote --read-only        # keep it running (tmux, or a login item); drop --read-only to allow writes
-telegram remote email you@example.com    # once: link your email (a code is mailed to confirm it)
-```
-
-On macOS, start `--remote` in a terminal on the Mac itself (or a tmux session started there), not
-over SSH: the confirmation dialog can't appear in an SSH session, so every app would be refused.
-
-In the app, add a custom connector with the URL `https://mcp.better-tg-cli.com/mcp`. Its sign-in
-page asks for your email and mails you a code; enter it, then confirm in the dialog on your computer.
-Without a linked email, `telegram remote pair` gives a one-time code for the same page. An agent can't
-answer that dialog, so nothing connects without you. `telegram remote clients` lists connected apps,
-`telegram remote revoke <id>` (or `--all`) disconnects them, and `telegram remote reset` also
-replaces this computer's device key. When the computer is off, the app gets "your computer is
-offline". The relay passes requests through without storing them, but it does see them: read
-"Hosted relay" in [SECURITY.md](SECURITY.md). Its code is in [`relay/`](relay/).
 
 ## FAQ
 
