@@ -2,7 +2,7 @@
   "name": "better-tg-cli",
   "displayName": "better-tg-cli",
   "description": "Unofficial Telegram client for your own account: a skill for the telegram CLI plus a local MCP server to read, search and send messages. Writes stay off until you allow them.",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "author": {
     "name": "Sergei Polin",
     "url": "https://github.com/TheVilfer"
@@ -22,7 +22,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "better-tg-cli@0.33.0",
+        "better-tg-cli@0.34.0",
         "mcp"
       ]
     }
