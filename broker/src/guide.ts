@@ -17,12 +17,12 @@ export const code = (text: string, copy: string, wrap = false) =>
 
 // ---- drawn screens -----------------------------------------------------------------------------
 
-const d = (t: string) => `<span class="s-dim">${t}</span>`;
-const a = (t: string) => `<span class="s-acc">${t}</span>`;
+export const d = (t: string) => `<span class="s-dim">${t}</span>`;
+export const a = (t: string) => `<span class="s-acc">${t}</span>`;
 const g = (t: string) => `<span class="s-ok">${t}</span>`;
-const b = (t: string) => `<b>${t}</b>`;
+export const b = (t: string) => `<b>${t}</b>`;
 
-function terminal(title: string, lines: string[]): string {
+export function terminal(title: string, lines: string[]): string {
   return `<figure class="screen term" aria-hidden="true"><div class="s-bar"><i></i><i></i><i></i><span>${title}</span></div>
 <div class="s-body">${lines.join('<br>')}</div></figure>`;
 }
@@ -164,6 +164,14 @@ ${modes}
 </section>`;
 }
 
+/** The drawn terminal window, also used on the landing page. */
+export const SCREEN_CSS = `.screen{margin:0;border:1px solid #2a2a2a;border-radius:12px;background:#0b0b0b;color:#ececec;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.18)}
+.s-bar{height:32px;display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid #222;background:#111}
+.s-bar i{width:10px;height:10px;border-radius:50%;background:#333}
+.s-bar span{margin:0 auto;transform:translateX(-24px);font:12px 'Geist Mono',ui-monospace,monospace;color:#8a8a8a}
+.s-body{padding:14px 16px 16px;font:13px/1.65 'Geist Mono',ui-monospace,monospace;overflow-x:auto;white-space:nowrap}
+.s-dim{color:#7d7d7d}.s-acc{color:#2AABEE}.s-ok{color:#3fb950}`;
+
 export const GUIDE_CSS = `
 .guide{margin-top:64px;padding-top:40px;border-top:1px solid var(--line)}
 .guide h2{font-size:26px;letter-spacing:-.5px;margin:0 0 24px}
@@ -187,12 +195,7 @@ export const GUIDE_CSS = `
 .sub li{margin-bottom:14px;color:var(--dim)}
 .sub h4{font-size:15px;color:var(--fg);margin:0 0 6px;font-weight:600}
 .btn{display:inline-block;text-decoration:none;font-weight:500;padding:10px 16px;border-radius:10px;background:var(--fg);color:var(--bg)!important}
-.screen{margin:0;border:1px solid #2a2a2a;border-radius:12px;background:#0b0b0b;color:#ececec;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.18)}
-.s-bar{height:32px;display:flex;align-items:center;gap:6px;padding:0 12px;border-bottom:1px solid #222;background:#111}
-.s-bar i{width:10px;height:10px;border-radius:50%;background:#333}
-.s-bar span{margin:0 auto;transform:translateX(-24px);font:12px 'Geist Mono',ui-monospace,monospace;color:#8a8a8a}
-.s-body{padding:14px 16px 16px;font:13px/1.65 'Geist Mono',ui-monospace,monospace;overflow-x:auto;white-space:nowrap}
-.s-dim{color:#7d7d7d}.s-acc{color:#2AABEE}.s-ok{color:#3fb950}
+${SCREEN_CSS}
 .s-dialog{margin:22px auto;max-width:400px;border:1px solid #2a2a2a;border-radius:12px;background:#151515;padding:18px;font-size:14px}
 .s-title{font-weight:600;font-size:15px;margin-bottom:12px}
 .s-row{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-top:1px solid #232323}
