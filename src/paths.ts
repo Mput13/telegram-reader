@@ -7,12 +7,22 @@ import { join } from 'node:path';
  * No profile = the historical locations, which existing installs depend on.
  */
 export function profile(): string | undefined {
-  const p = process.env.TG_PROFILE;
+  let p = process.env.TG_PROFILE;
+  // Mock runs keep their audit log and write-access flag away from every real profile
+  if (isMock() && !p?.startsWith('mock')) p = 'mock';
   if (!p) return undefined;
   if (!/^[a-z0-9][a-z0-9-]{0,31}$/.test(p)) {
     throw new Error(`Invalid TG_PROFILE "${p}": use lowercase letters, digits and dashes`);
   }
   return p;
+}
+
+/**
+ * TG_MOCK serves a fake account from a local file instead of Telegram (src/mock/): `1` keeps it in
+ * the mock profile, any other value is the path of a state file. No client is ever connected.
+ */
+export function isMock(): boolean {
+  return !!process.env.TG_MOCK;
 }
 
 const suffix = (): string => (profile() ? `-${profile()}` : '');

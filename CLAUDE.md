@@ -51,6 +51,8 @@ upstream/main`, keeping `teleproto` imports and reading text through `messageTex
 See `DEVELOPMENT.md`. The short version:
 - `scripts/tg-dev <args>` runs `src/` with Bun under `TG_PROFILE=dev`. That profile is `~/.config/tg-dev`
   plus the Keychain service `tg-cli-dev`, isolated from the real session.
+- `TG_MOCK=1 scripts/tg-dev <args>` runs against a fake account (`src/mock/`): no login, no
+  write-access step, nothing reaches Telegram. Prefer it for anything that does not need real data.
 - Never add a watch mode that writes `dist/`, because the installed `telegram` runs it live.
 - All state paths go through `src/paths.ts`, and every TelegramClient is built with `clientParams()`
   from `src/client-options.ts` (stderr logger, `TG_LOG_LEVEL`, the profile's `testServers`).

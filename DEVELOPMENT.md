@@ -17,6 +17,42 @@ TG_LOG_LEVEL=debug scripts/tg-dev check     # MTProto log on stderr (none|error|
 
 To put it on PATH, run `ln -s "$PWD/scripts/tg-dev" /opt/homebrew/bin/tg-dev`.
 
+## Mock mode: no account at all
+
+`TG_MOCK=1` replaces Telegram with a small fake account, so most work needs neither a login nor
+real chats:
+
+```bash
+TG_MOCK=1 scripts/tg-dev inbox
+TG_MOCK=1 scripts/tg-dev send -1004001 "ship it"     # no write-access step: nothing real to approve
+TG_MOCK=1 scripts/tg-dev click @demo_bot 2 Catalog   # a scripted bot with every button kind
+TG_MOCK=/tmp/scenario.json scripts/tg-dev chats      # your own state file (created from the seed)
+```
+
+`getClient()` then returns `MockClient` (`src/mock/client.ts`) instead of a `TelegramClient`. It
+answers the same calls with real `Api.*` objects built from plain data (`src/mock/world.ts`), so
+`src/client.ts`, the formatters, the commands and the MCP server all run unchanged; only the
+network is gone. The built-in account has one of everything the commands tell apart: Saved
+Messages, private chats (unread, muted), a bot, a basic group, supergroups (two with similar
+titles), a forum with topics, a channel with comments in a discussion group, an archived chat, a
+folder and contacts.
+
+- **State.** Writes are saved, so `send` followed by `read` shows the message. `TG_MOCK=1` keeps
+  the state in `~/.config/tg-mock/mock-state.json`; any other value is the path of a state file.
+  Delete the file to start over. Seed messages store their age, so `--since 1d` keeps working.
+- **Isolation.** Mock mode forces the profile `mock` (or your `TG_PROFILE` if it starts with
+  `mock`), which keeps its audit log away from real profiles. `clientParams()` throws under
+  `TG_MOCK`, and every real client is built with it, so a mock run cannot open a connection.
+  `auth`, `onboard`, `logout`, `write-access` and `update` refuse to run.
+- **The write guard is skipped**, because a mock write only changes that local file. This is the
+  one exception to "no way to skip the confirmation"; the strict chat matching of writes stays.
+- **Not covered:** `watch`, polls, stories, inline bots, admin actions (kick, promote, create,
+  join, leave) and profile edits. They fail with `mock: … is not implemented`; add a handler to
+  `MockClient.invoke()`, or test them against a dev profile.
+- **Tests.** `test/mock.test.ts` drives the real client functions and the CLI through the mock.
+  Use `new MockClient(seedWorld())` in a test instead of hand-written fakes when the code under
+  test needs more than one call.
+
 ## Profiles: keep dev away from your real session
 
 `TG_PROFILE=<name>` gives each profile its own state:

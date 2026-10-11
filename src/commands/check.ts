@@ -1,7 +1,8 @@
 import { Command } from 'commander';
 import { getClient, getMe, disconnectClient } from '../client.js';
 import { isConfigured, loadConfig } from '../config.js';
-import { configDir, profile } from '../paths.js';
+import { configDir, isMock, profile } from '../paths.js';
+import { mockStatePath } from '../mock/world.js';
 import { isSecretStoreAvailable } from '../secrets.js';
 import { isOnePasswordAvailable } from '../onepassword.js';
 import { isKeychainAvailable } from '../keychain.js';
@@ -19,6 +20,14 @@ function getSecretBackendLabel(): string {
 export const checkCommand = new Command('check')
   .description('Verify session and credentials')
   .action(async () => {
+    if (isMock()) {
+      const me = await getMe(await getClient());
+      console.log(chalk.green('Mock mode: no Telegram session is used'));
+      console.log(`Logged in as: ${me.firstName || ''} ${me.lastName || ''} (@${me.username || 'no username'})`);
+      console.log(`State file: ${mockStatePath()} (delete it to start over)`);
+      await disconnectClient();
+      return;
+    }
     if (!isConfigured()) {
       const p = profile();
       console.log(chalk.red(p
