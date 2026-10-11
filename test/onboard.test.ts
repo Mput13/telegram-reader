@@ -3,6 +3,7 @@ import { request } from 'node:http';
 import { rpcCode, type LoginDriver } from '../src/auth.js';
 import { RPCError } from 'teleproto/errors/index.js';
 import { startOnboarding, type OnboardEvent, type OnboardSession } from '../src/onboard.js';
+import { errorMessage } from '../src/text.js';
 
 // Raw HTTP so the tests control Host and Origin exactly (fetch won't set Host)
 function call(url: string, opts: { method?: string; host?: string; origin?: string; body?: unknown } = {}) {
@@ -157,6 +158,23 @@ describe('telegram onboard server', () => {
   it('refuses a password nobody asked for', async () => {
     const { post } = await start();
     expect((await post('password', { password: 'x' })).status).toBe(409);
+  });
+});
+
+describe('errors on the wire', () => {
+  it('sends the message of an Error and never a stringified value', () => {
+    expect(errorMessage(new Error('Invite expired'))).toBe('Invite expired');
+    expect(errorMessage({ stack: 'at secret.ts:1', toString: () => 'dump' })).toBe('Unexpected error');
+    expect(errorMessage('plain string')).toBe('Unexpected error');
+    expect(errorMessage(undefined)).toBe('Unexpected error');
+  });
+
+  it('marks its JSON answers as not to be sniffed', async () => {
+    const { state } = await start();
+    await state();
+    const res = await fetch(session!.url + 'state');
+    expect(res.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(res.headers.get('content-type')).toBe('application/json');
   });
 });
 

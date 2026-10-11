@@ -4,6 +4,7 @@ import type { AddressInfo } from 'node:net';
 import { renderSVG } from 'uqr';
 import type { LoginDriver, LoginUser } from './auth.js';
 import { onboardPage } from './onboard-page.js';
+import { errorMessage } from './text.js';
 
 /**
  * `telegram onboard`: a one-shot page on 127.0.0.1 where the person logs in, so an agent can start
@@ -56,7 +57,7 @@ export interface OnboardSession {
 }
 
 function json(res: ServerResponse, status: number, body: unknown): void {
-  res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+  res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
   res.end(JSON.stringify(body));
 }
 
@@ -115,7 +116,7 @@ export async function startOnboarding(options: OnboardOptions): Promise<OnboardS
       resolveDone(result.user);
     } catch (e) {
       if (abort.signal.aborted) return;
-      const message = e instanceof Error ? e.message : String(e);
+      const message = errorMessage(e);
       set({ step: 'error', error: message, qrSvg: undefined });
       options.emit({ event: 'error', message });
     } finally {
@@ -172,7 +173,7 @@ export async function startOnboarding(options: OnboardOptions): Promise<OnboardS
           creds = { apiId, apiHash, invite: false };
         }
       } catch (e) {
-        return json(res, 400, { error: 'invite_failed', message: e instanceof Error ? e.message : String(e) });
+        return json(res, 400, { error: 'invite_failed', message: errorMessage(e) });
       }
       void runLogin();
       return json(res, 202, { ok: true });
