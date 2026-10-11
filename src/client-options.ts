@@ -1,5 +1,6 @@
 import { Logger, LogLevel } from 'teleproto/extensions/Logger.js';
 import { loadConfig } from './config.js';
+import { isMock } from './paths.js';
 
 const LEVELS: Record<string, LogLevel> = {
   none: LogLevel.NONE, error: LogLevel.ERROR, warn: LogLevel.WARN, info: LogLevel.INFO, debug: LogLevel.DEBUG,
@@ -33,6 +34,10 @@ export function createLogger(level = process.env.TG_LOG_LEVEL?.toLowerCase()): L
  * (set by `telegram auth --test-dc`): a session belongs to one environment.
  */
 export function clientParams(testServers = !!loadConfig(() => {}).testServers) {
+  // Every real TelegramClient is built with these options, so this one check keeps TG_MOCK offline
+  if (isMock()) {
+    throw new Error('This needs a real Telegram connection, which mock mode (TG_MOCK) never opens. Unset TG_MOCK to use a real account.');
+  }
   return { connectionRetries: 5, baseLogger: createLogger(), testServers, floodSleepThreshold: floodWaitMax() };
 }
 

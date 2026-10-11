@@ -1,4 +1,4 @@
-# better-tg-cli
+# Better-TG-CLI
 
 An unofficial, open-source Telegram client for your own account, packaged for Claude. The plugin
 adds the `better-tg-cli` skill, which teaches Claude to use the `telegram` command-line tool, and a

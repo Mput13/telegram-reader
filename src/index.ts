@@ -4,7 +4,7 @@ import './env.js';
 import { isMainThread } from 'node:worker_threads';
 import { VERSION } from './version.js';
 import { Command } from 'commander';
-import { profile } from './paths.js';
+import { isMock, profile } from './paths.js';
 import { startMcpServer } from './mcp.js';
 import { mcpToken, startMcpHttpServer } from './mcp-http.js';
 import { BACKGROUND_CHECK_COMMAND, maybeNotifyUpdate, runBackgroundCheck } from './update.js';
@@ -232,6 +232,15 @@ program
     lines.push('', 'Most read commands accept --json; --markdown where noted in `<cmd> --help`.');
     console.log(lines.join('\n'));
   });
+
+// Mock mode has no session to create, drop or unlock; these would otherwise prompt or touch the secret store
+const NOT_IN_MOCK = new Set(['auth', 'onboard', 'logout', 'write-access', 'update']);
+program.hook('preAction', (_program, command) => {
+  if (isMock() && NOT_IN_MOCK.has(command.name())) {
+    console.error(`"${command.name()}" does nothing in mock mode (TG_MOCK is set): the fake account needs no login and its writes need no approval. Unset TG_MOCK to use a real account.`);
+    process.exit(2);
+  }
+});
 
 try {
   profile();

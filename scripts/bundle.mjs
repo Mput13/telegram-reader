@@ -108,7 +108,8 @@ if (mode === 'node') {
     const windows = mode.includes('windows') ? {
       title: 'better-tg-cli',
       publisher: 'better-tg-cli',
-      version: `${version}.0`,
+      // Four numeric parts only: a release candidate carries the version it leads to
+      version: `${version.split('-')[0]}.0`,
       description: 'Telegram on your own account for the terminal and AI agents',
       copyright: 'MIT License, (c) 2026 Derek Rein, Sergei Polin',
     } : undefined;

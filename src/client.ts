@@ -8,12 +8,20 @@ import { computeCheck } from 'teleproto/Password.js';
 import { getCredentials, getSessionString, setSessionString, isConfigured, loadConfig } from './config.js';
 import bigInt from 'big-integer';
 import { existsSync, mkdirSync, statSync } from 'fs';
+import { isMock } from './paths.js';
 import { basename, join } from 'path';
 
 let clientInstance: TelegramClient | null = null;
 
 export async function getClient(): Promise<TelegramClient> {
   if (clientInstance?.connected) {
+    return clientInstance;
+  }
+
+  if (isMock()) {
+    // Imported on demand so a normal run never loads the mock
+    const { createMockClient } = await import('./mock/client.js');
+    clientInstance = createMockClient();
     return clientInstance;
   }
 

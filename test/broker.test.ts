@@ -370,7 +370,7 @@ describe('self-serve signup', () => {
       await send('ru@b.co', 'ru');
       expect(mails.at(-1)!.subject).toMatch(/^Код для инвайта/);
       await send('xx@b.co', 'fr');
-      expect(mails.at(-1)!.subject).toMatch(/^Your better-tg-cli invite code/);
+      expect(mails.at(-1)!.subject).toMatch(/^Your Better-TG-CLI invite code/);
       expect(mails[2].text).not.toMatch(CYRILLIC);
       expect((await confirm(e, 'es@b.co', codeOf(mails.filter(m => m.to === 'es@b.co')))).status).toBe(201);
       expect(JSON.parse(store.get(`email:${await sha256Hex('es@b.co')}`)!).lang).toBe('es');

@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 /** The local onboarding page: inline only, one nonce per response, English, Spanish or Russian from the browser. */
 
 const en = {
-  title: 'Log in to Telegram for better-tg-cli',
+  title: 'Log in to Telegram for Better-TG-CLI',
   lead: 'Your agent opened this page. What you enter here stays on this computer: the agent never sees the invite, the QR code or your password.',
   inviteH: 'Step 1. Invite',
   getInvite: 'Get an invite',
@@ -31,7 +31,7 @@ const en = {
 type Strings = typeof en;
 
 const es: Strings = {
-  title: 'Inicia sesión en Telegram para better-tg-cli',
+  title: 'Inicia sesión en Telegram para Better-TG-CLI',
   lead: 'Tu agente abrió esta página. Lo que introduces aquí se queda en este equipo: el agente nunca ve la invitación, el código QR ni tu contraseña.',
   inviteH: 'Paso 1. Invitación',
   getInvite: 'Obtener una invitación',
@@ -57,7 +57,7 @@ const es: Strings = {
 };
 
 const ru: Strings = {
-  title: 'Вход в Telegram для better-tg-cli',
+  title: 'Вход в Telegram для Better-TG-CLI',
   lead: 'Эту страницу открыл ваш агент. Всё, что здесь вводите, остаётся на этом компьютере: агент не видит ни инвайт, ни QR, ни пароль.',
   inviteH: 'Шаг 1. Инвайт',
   getInvite: 'Получить инвайт',
@@ -101,7 +101,7 @@ export function onboardPage(options: { site: string; returnTo: string }): { html
   const html = `<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>better-tg-cli</title>
+<title>Better-TG-CLI</title>
 <style nonce="${nonce}">
 :root{--bg:#fff;--fg:#0a0a0a;--dim:#6b6f73;--line:#e4e5e7;--panel:#fafafa;--accent:#1c93d1;--err:#c62828;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--bg:#000;--fg:#f2f2f2;--dim:#8d9297;--line:#26282a;--panel:#0b0b0b;--accent:#2AABEE;--err:#ff6b6b;color-scheme:dark}}

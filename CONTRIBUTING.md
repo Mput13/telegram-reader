@@ -4,6 +4,8 @@ Issues and pull requests are welcome.
 
 - **Setup, running from source, dev profiles and debugging:** see [DEVELOPMENT.md](DEVELOPMENT.md).
   Test against a dev profile (`scripts/tg-dev`), never your main account.
+- **Open the PR against `next`**, not `main`: `main` is the last stable release, and `next`
+  collects what goes into the following one.
 - **Before a PR:** run `npm run build && npm test`. CI runs both on Node 22 and 24. Tests are
   offline and need no Telegram session. Add one for any behaviour you change.
 - **Style:** match the surrounding code. Commits use `Add …`, `Fix …` or `Update …`.

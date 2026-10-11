@@ -1,6 +1,6 @@
 {
   "name": "better-tg-cli",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "description": "Telegram for your terminal and your AI agents: read, search, send and press bot buttons on your own account. MCP server included.",
   "mcpName": "io.github.TheVilfer/better-tg-cli",
   "keywords": [

@@ -31,10 +31,10 @@ export const asLang = (x: unknown): Lang => (typeof x === 'string' && isLang(x) 
 const en = {
   langName: 'English',
   page: {
-    title: 'better-tg-cli: Telegram for your terminal and AI agents',
+    title: 'Better-TG-CLI: Telegram for your terminal and AI agents',
     description: 'Open-source Telegram client for Claude Code, Codex, Cursor and the command line. Read-only until you allow writes. Get a free invite, no API keys needed.',
     ogLocale: 'en_US',
-    h1: 'Invite to log in to better-tg-cli',
+    h1: 'Invite to log in to Better-TG-CLI',
     leadHtml: 'An invite lets you log in to your Telegram account through the CLI without creating your own API keys on my.telegram.org. Confirm your email with a code: one email, one invite, and asking again replaces it. Your messages and session stay on your computer only.\nAlready have your own keys? <a href="#guide">Skip to installation</a>.',
     cliBannerHtml: 'You came from <span class="mono">telegram onboard</span>. Once your email is confirmed, the invite goes back to the CLI by itself, so there is nothing to copy.',
     emailLabel: 'Email',
@@ -118,7 +118,7 @@ const en = {
     cursorButton: 'Install in Cursor',
     mcpbButton: 'Download better-tg-cli.mcpb',
     prompt: [
-      'Connect my Telegram through better-tg-cli (https://github.com/TheVilfer/better-tg-cli):',
+      'Connect my Telegram through Better-TG-CLI (https://github.com/TheVilfer/better-tg-cli):',
       '1. Install the CLI: `brew install thevilfer/tap/better-tg-cli`. Without Homebrew: `npm install -g better-tg-cli` (needs Node 20+). On Windows: `scoop bucket add thevilfer https://github.com/TheVilfer/scoop-bucket` and `scoop install better-tg-cli`.',
       '2. Run `telegram onboard --json` (in the background if your timeout is shorter than 15 minutes). A page opens where I get an invite, scan a QR code and enter my password myself. Wait for the `done` event. Don’t ask me for codes, passwords or the invite, and don’t fill in the page yourself.',
       '3. Install the skill for yourself: `telegram skill install`.',
@@ -126,7 +126,7 @@ const en = {
     ],
     screens: {
       agent: 'agent',
-      promptEcho: 'Connect my Telegram through better-tg-cli…',
+      promptEcho: 'Connect my Telegram through Better-TG-CLI…',
       autoDone: 'Done: you are logged in as Alice (@alice).',
       claudeAsk: 'what’s unread in my Telegram?',
       claudeAnswer: ['Most of it is in “Rust Seattle” (41). Alice', 'asks if the 7 pm meetup is still on.'],
@@ -135,11 +135,11 @@ const en = {
     },
   },
   mail: {
-    subject: (code: string) => `Your better-tg-cli invite code: ${code}`,
-    intro: 'Your code for a <b>better-tg-cli</b> invite:',
+    subject: (code: string) => `Your Better-TG-CLI invite code: ${code}`,
+    intro: 'Your code for a <b>Better-TG-CLI</b> invite:',
     textIntro: (code: string) => `Your code: ${code}`,
     enter: 'Enter it on the invite page. The code is valid for 15 minutes.',
-    ignore: 'If you did not ask for a better-tg-cli invite, just delete this email.',
+    ignore: 'If you did not ask for a Better-TG-CLI invite, just delete this email.',
   },
 };
 
@@ -148,10 +148,10 @@ export type Dict = typeof en;
 const es: Dict = {
   langName: 'Español',
   page: {
-    title: 'better-tg-cli: Telegram para tu terminal y tus agentes de IA',
+    title: 'Better-TG-CLI: Telegram para tu terminal y tus agentes de IA',
     description: 'Cliente de Telegram de código abierto para Claude Code, Codex, Cursor y la línea de comandos. Solo lectura hasta que permitas escribir. Consigue una invitación gratis, sin claves de API.',
     ogLocale: 'es_ES',
-    h1: 'Invitación para entrar en better-tg-cli',
+    h1: 'Invitación para entrar en Better-TG-CLI',
     leadHtml: 'Con una invitación entras en tu cuenta de Telegram desde la CLI sin crear tus propias claves de API en my.telegram.org. Confirma tu correo con un código: un correo, una invitación, y si la pides otra vez, la nueva sustituye a la anterior. Tus mensajes y tu sesión se quedan solo en tu equipo.\n¿Ya tienes tus propias claves? <a href="#guide">Ir a la instalación</a>.',
     cliBannerHtml: 'Vienes de <span class="mono">telegram onboard</span>. Cuando confirmes tu correo, la invitación volverá sola a la CLI: no tienes que copiar nada.',
     emailLabel: 'Correo electrónico',
@@ -235,7 +235,7 @@ const es: Dict = {
     cursorButton: 'Instalar en Cursor',
     mcpbButton: 'Descargar better-tg-cli.mcpb',
     prompt: [
-      'Conecta mi Telegram con better-tg-cli (https://github.com/TheVilfer/better-tg-cli):',
+      'Conecta mi Telegram con Better-TG-CLI (https://github.com/TheVilfer/better-tg-cli):',
       '1. Instala la CLI: `brew install thevilfer/tap/better-tg-cli`. Sin Homebrew: `npm install -g better-tg-cli` (necesita Node 20+). En Windows: `scoop bucket add thevilfer https://github.com/TheVilfer/scoop-bucket` y `scoop install better-tg-cli`.',
       '2. Ejecuta `telegram onboard --json` (en segundo plano si tu tiempo límite es menor de 15 minutos). Se abrirá una página donde yo mismo obtengo la invitación, escaneo el código QR e introduzco mi contraseña. Espera al evento `done`. No me pidas códigos, contraseñas ni la invitación, y no rellenes la página tú.',
       '3. Instálate la skill: `telegram skill install`.',
@@ -243,7 +243,7 @@ const es: Dict = {
     ],
     screens: {
       agent: 'agente',
-      promptEcho: 'Conecta mi Telegram con better-tg-cli…',
+      promptEcho: 'Conecta mi Telegram con Better-TG-CLI…',
       autoDone: 'Listo: has iniciado sesión como Alice (@alice).',
       claudeAsk: '¿qué tengo sin leer en Telegram?',
       claudeAnswer: ['Lo más en «Rust Seattle» (41). Alice', 'pregunta si sigue en pie la quedada de las 7.'],
@@ -252,21 +252,21 @@ const es: Dict = {
     },
   },
   mail: {
-    subject: (code: string) => `Tu código de invitación a better-tg-cli: ${code}`,
-    intro: 'Tu código para la invitación a <b>better-tg-cli</b>:',
+    subject: (code: string) => `Tu código de invitación a Better-TG-CLI: ${code}`,
+    intro: 'Tu código para la invitación a <b>Better-TG-CLI</b>:',
     textIntro: (code: string) => `Tu código: ${code}`,
     enter: 'Introdúcelo en la página de la invitación. El código es válido durante 15 minutos.',
-    ignore: 'Si no pediste una invitación a better-tg-cli, simplemente borra este correo.',
+    ignore: 'Si no pediste una invitación a Better-TG-CLI, simplemente borra este correo.',
   },
 };
 
 const ru: Dict = {
   langName: 'Русский',
   page: {
-    title: 'better-tg-cli: Telegram для терминала и AI-агентов',
+    title: 'Better-TG-CLI: Telegram для терминала и AI-агентов',
     description: 'Open-source клиент Telegram для Claude Code, Codex, Cursor и командной строки. Только чтение, пока вы не разрешите запись. Бесплатный инвайт, без своих API-ключей.',
     ogLocale: 'ru_RU',
-    h1: 'Инвайт для входа в better-tg-cli',
+    h1: 'Инвайт для входа в Better-TG-CLI',
     leadHtml: 'Инвайт позволяет войти в свой Telegram через CLI без своих API-ключей с my.telegram.org. Подтвердите почту кодом из письма: одна почта — один инвайт, повторный запрос заменяет прежний. Сообщения и сессия остаются только на вашем компьютере.\nУже есть свои ключи? <a href="#guide">Сразу к установке</a>.',
     cliBannerHtml: 'Вас прислал <span class="mono">telegram onboard</span>. После подтверждения почты инвайт сам вернётся в CLI — копировать ничего не нужно.',
     emailLabel: 'Почта',
@@ -350,7 +350,7 @@ const ru: Dict = {
     cursorButton: 'Установить в Cursor',
     mcpbButton: 'Скачать better-tg-cli.mcpb',
     prompt: [
-      'Подключи мне Telegram через better-tg-cli (https://github.com/TheVilfer/better-tg-cli):',
+      'Подключи мне Telegram через Better-TG-CLI (https://github.com/TheVilfer/better-tg-cli):',
       '1. Установи CLI: `brew install thevilfer/tap/better-tg-cli`. Если Homebrew нет — `npm install -g better-tg-cli` (нужен Node 20+). На Windows — `scoop bucket add thevilfer https://github.com/TheVilfer/scoop-bucket` и `scoop install better-tg-cli`.',
       '2. Запусти `telegram onboard --json` (в фоне, если твой таймаут короче 15 минут). Откроется страница, где я сам получу инвайт, отсканирую QR и введу пароль. Дождись события `done`. Не проси у меня коды, пароли и инвайт и не заполняй страницу сам.',
       '3. Установи себе скилл: `telegram skill install`.',
@@ -358,7 +358,7 @@ const ru: Dict = {
     ],
     screens: {
       agent: 'агент',
-      promptEcho: 'Подключи мне Telegram через better-tg-cli…',
+      promptEcho: 'Подключи мне Telegram через Better-TG-CLI…',
       autoDone: 'Готово: вы вошли как Алиса (@alice).',
       claudeAsk: 'что у меня непрочитанного в телеге?',
       claudeAnswer: ['Больше всего в «Rust Seattle» (41). Алиса', 'спрашивает, в силе ли встреча в 7.'],
@@ -367,11 +367,11 @@ const ru: Dict = {
     },
   },
   mail: {
-    subject: (code: string) => `Код для инвайта better-tg-cli: ${code}`,
-    intro: 'Ваш код для инвайта в <b>better-tg-cli</b>:',
+    subject: (code: string) => `Код для инвайта Better-TG-CLI: ${code}`,
+    intro: 'Ваш код для инвайта в <b>Better-TG-CLI</b>:',
     textIntro: (code: string) => `Ваш код: ${code}`,
     enter: 'Введите его на странице инвайта. Код действует 15 минут.',
-    ignore: 'Если вы не запрашивали инвайт в better-tg-cli, просто удалите это письмо.',
+    ignore: 'Если вы не запрашивали инвайт в Better-TG-CLI, просто удалите это письмо.',
   },
 };
 

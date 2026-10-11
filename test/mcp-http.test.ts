@@ -81,6 +81,32 @@ describe('telegram mcp --http', () => {
     expect((await bad.json()).error.code).toBe(-32700);
   });
 
+  it('answers as JSON that is never sniffed, and keeps the details of an internal failure to itself', async () => {
+    const ok = await post(full.url, { jsonrpc: '2.0', id: 1, method: 'ping' });
+    expect(ok.headers.get('content-type')).toBe('application/json');
+    expect(ok.headers.get('x-content-type-options')).toBe('nosniff');
+    expect((await post(full.url, '{nope')).headers.get('x-content-type-options')).toBe('nosniff');
+
+    // The CLI run blows up: that is our failure, so the client gets a fixed text and the log gets the rest
+    const failing = createMcpHttpHandler(TOKEN, {}, async () => { throw new Error('<img src=x onerror=alert(1)> at /Users/me/secret.ts:1'); });
+    const server = createServer((req, res) => void failing(req, res));
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+    const logged: string[] = [];
+    const error = console.error;
+    console.error = (line: string) => void logged.push(line);
+    try {
+      const res = await post(`http://127.0.0.1:${(server.address() as AddressInfo).port}`, {
+        jsonrpc: '2.0', id: 7, method: 'tools/call', params: { name: 'telegram_read', arguments: { args: ['whoami'] } },
+      });
+      expect(res.headers.get('x-content-type-options')).toBe('nosniff');
+      expect(await res.json()).toEqual({ jsonrpc: '2.0', id: 7, error: { code: -32603, message: 'Internal error' } });
+      expect(logged.join('\n')).toContain('onerror=alert(1)');
+    } finally {
+      console.error = error;
+      server.close();
+    }
+  });
+
   it('--read-only hides telegram_write and refuses it', async () => {
     const list = await (await post(readOnly.url, { jsonrpc: '2.0', id: 1, method: 'tools/list' })).json();
     expect(list.result.tools.map((t: { name: string }) => t.name)).toEqual(['telegram_help', 'telegram_read']);

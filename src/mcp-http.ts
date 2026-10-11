@@ -32,9 +32,20 @@ export function checkBearer(header: string | undefined, token: string): boolean 
 type Json = Record<string, unknown>;
 
 function send(res: ServerResponse, status: number, body?: unknown, headers: Record<string, string> = {}): void {
-  const payload = body === undefined ? '' : JSON.stringify(body);
-  res.writeHead(status, { ...(payload ? { 'Content-Type': 'application/json' } : {}), ...headers });
-  res.end(payload);
+  if (body === undefined) {
+    res.writeHead(status, headers);
+    res.end();
+    return;
+  }
+  // Always JSON and never sniffed, so nothing in an answer can be read as HTML
+  res.writeHead(status, { ...headers, 'Content-Type': 'application/json', 'X-Content-Type-Options': 'nosniff' });
+  res.end(JSON.stringify(body));
+}
+
+/** An unexpected failure: the details stay in the server log, the client gets a fixed text. */
+function internalError(error: unknown): string {
+  console.error(`${new Date().toISOString()} internal error: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`);
+  return 'Internal error';
 }
 
 function readBody(req: IncomingMessage): Promise<string> {
@@ -95,7 +106,7 @@ export function createRpcProcessor(options: { readOnly?: boolean } = {}, run?: P
         if (msg.method === 'tools/call') logCall(msg, (reply as { result?: { isError?: boolean } })?.result?.isError ? 'error' : 'ok');
         if (reply) replies.push(reply);
       } catch (e) {
-        replies.push({ jsonrpc: '2.0', id: (msg.id as string | number | undefined) ?? null, error: { code: -32603, message: e instanceof Error ? e.message : String(e) } });
+        replies.push({ jsonrpc: '2.0', id: (msg.id as string | number | undefined) ?? null, error: { code: -32603, message: internalError(e) } });
       }
     }
     if (!replies.length) return { status: 202 };
@@ -135,7 +146,7 @@ export function startMcpHttpServer(commands: Iterable<string>, options: { host: 
   }
   setKnownCommands(commands);
   const server = createServer((req, res) => {
-    createHandler(req, res).catch(e => send(res, 500, { error: e instanceof Error ? e.message : String(e) }));
+    createHandler(req, res).catch(e => send(res, 500, { error: internalError(e) }));
   });
   const createHandler = createMcpHttpHandler(token, { readOnly: options.readOnly });
   server.listen(options.port, options.host, () => {

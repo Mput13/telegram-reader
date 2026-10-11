@@ -219,7 +219,7 @@ export async function handleMessage(msg: RpcMessage, run = runCli, options: { re
       return reply({
         protocolVersion: SUPPORTED_VERSIONS.includes(asked) ? asked : SUPPORTED_VERSIONS[0],
         capabilities: { tools: {} },
-        serverInfo: { name: 'better-tg-cli', title: 'Telegram (better-tg-cli)', version: VERSION },
+        serverInfo: { name: 'better-tg-cli', title: 'Telegram (Better-TG-CLI)', version: VERSION },
         instructions:
           'Telegram on the user\'s own account. Reads are free; writes need the user to enable write access. ' +
           'Prefer IDs from chats/inbox output. Use telegram_help to look up flags. ' +

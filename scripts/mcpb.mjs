@@ -14,7 +14,7 @@ const repo = 'https://github.com/TheVilfer/better-tg-cli';
 const manifest = {
   manifest_version: '0.3',
   name: 'better-tg-cli',
-  display_name: 'Telegram (better-tg-cli)',
+  display_name: 'Telegram (Better-TG-CLI)',
   version: pkg.version,
   description: 'Read, search and send Telegram messages on your own account. Read-only until you allow writes.',
   long_description:

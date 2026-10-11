@@ -6,7 +6,7 @@ import {
 } from '../update.js';
 
 export const updateCommand = new Command('update')
-  .description('Update better-tg-cli the way it was installed (brew, npm or a git checkout)')
+  .description('Update Better-TG-CLI the way it was installed (brew, npm or a git checkout)')
   .option('--check', 'Only report whether a newer version exists')
   .option('--json', 'Output as JSON (with --check)')
   .action(async (options) => {

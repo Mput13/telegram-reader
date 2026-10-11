@@ -1,10 +1,11 @@
 name: CI
 
+# next collects merged pull requests; main is the last stable release (scripts/release.sh)
 on:
   push:
-    branches: [main]
+    branches: [main, next]
   pull_request:
-    branches: [main]
+    branches: [main, next]
 
 
 permissions:
