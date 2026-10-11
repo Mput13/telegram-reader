@@ -2,17 +2,19 @@
 
 ## Version and Release Workflow
 
-Changes land through a branch and a pull request (green CI), never by pushing to main.
+Changes land through a branch and a pull request (green CI) into `next`, never by pushing.
+`main` is always the last stable release: only release PRs are merged into it.
 The version lives only in `package.json`. `scripts/gen-version.mjs` (run by build, test and
 `release.sh`) copies it into `src/version.ts`, the plugin manifests, `plugin/*` (including the
 pinned `npx better-tg-cli@X.Y.Z`), `server.json` and `gemini-extension.json`; CI fails if any of
 them drifts. Never edit a version by hand anywhere else. Releases
-use `scripts/release.sh` (see Releasing below): a release PR bumps the version, computed from the
-PR titles, then the tag `vX.Y.Z` is pushed from main after the merge.
+use `scripts/release.sh` (see Releasing below): a release PR from `next` into `main` bumps the
+version, computed from the PR titles, then the tag `vX.Y.Z` is pushed from main after the merge.
+`scripts/release.sh pre` publishes a release candidate (`vX.Y.Z-rc.N`) of `next` without a bump.
 
 ## Commit Message Format
 
-PR titles become the squash commits on main, and they decide the next version
+PR titles become the squash commits on `next`, and they decide the next version
 (`scripts/next-version.mjs`):
 - `Add <feature>` for new features → minor
 - `Fix <bug>` for bug fixes, `Update <component>` or anything else → patch
@@ -55,11 +57,28 @@ See `DEVELOPMENT.md`. The short version:
 
 ## Releasing
 
-Never push to main directly: every change goes through a branch and a PR with green CI.
-`scripts/release.sh` (no argument) takes the level from the PR titles since the last tag, bumps the
-version on `release/vX.Y.Z`, tests and opens a PR (an explicit `patch|minor|major|X.Y.Z` overrides);
-after it is squash-merged, `scripts/release.sh tag` tags main `vX.Y.Z` and pushes the tag.
-The tag runs `.github/workflows/release.yml`:
+Two long-lived branches: pull requests are squash-merged into `next`, and `main` is always the
+last stable release (README, `install.sh` and the plugin marketplaces read `main`, so they never
+describe something unreleased). Never push to either directly. Merging a PR publishes nothing;
+these commands do, all run on `next`:
+
+- `scripts/release.sh pre` pre-releases what is on `next`: it tags HEAD `vX.Y.Z-rc.N` (the coming
+  version, N counts up) with no PR and no version bump, because the workflow takes a candidate's
+  version from its tag. A candidate becomes a GitHub pre-release and `better-tg-cli@next` on npm
+  only; Homebrew, Scoop, the MCP Registry, `npm install -g better-tg-cli` and `telegram update`
+  keep the last stable version. Cut as many candidates as needed.
+- `scripts/release.sh` (no argument) takes the level from the PR titles since the last stable tag,
+  bumps the version on `release/vX.Y.Z` off `next`, tests and opens a PR into `main` (an explicit
+  `patch|minor|major|X.Y.Z` overrides). It says whether `next` has commits that were in no
+  candidate. Merge that PR with a **merge commit**, never squash: the stable tag must stay an
+  ancestor of `next`, because the next release counts its PRs from that tag.
+- `scripts/release.sh tag` then tags main `vX.Y.Z`, pushes the tag and opens a `main` → `next`
+  PR that brings the release commit back (merge commit again).
+
+A fix that cannot wait for `next` goes as a PR into `main` like a release, followed by the same
+`main` → `next` merge.
+
+A stable tag runs `.github/workflows/release.yml`:
 1. verify (tag == package.json, tests) and the Claude Desktop extension `better-tg-cli.mcpb`
    (`scripts/mcpb.mjs`)
 2. Bun binaries for darwin-arm64/x64 (built and ad-hoc signed on macOS) and linux-x64/arm64

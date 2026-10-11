@@ -18,15 +18,23 @@ export type InstallMethod =
   | { kind: 'source'; root: string }
   | { kind: 'binary'; path: string };
 
-/** Compares dotted numeric versions; pre-release suffixes are ignored. */
+/**
+ * Compares versions numerically. A pre-release (`0.35.0-rc.2`, from `npm i -g better-tg-cli@next`)
+ * is older than its release and ordered by its number, so the release replaces it.
+ */
 export function compareVersions(a: string, b: string): number {
-  const pa = a.split(/[.-]/).slice(0, 3).map(Number);
-  const pb = b.split(/[.-]/).slice(0, 3).map(Number);
+  const parse = (v: string) => {
+    const [core, pre] = v.split('-', 2);
+    const parts = core.split('.').slice(0, 3).map(Number);
+    return { parts, pre: pre === undefined ? Infinity : Number(/(\d+)$/.exec(pre)?.[1] ?? 0) };
+  };
+  const pa = parse(a);
+  const pb = parse(b);
   for (let i = 0; i < 3; i++) {
-    const d = (pa[i] || 0) - (pb[i] || 0);
+    const d = (pa.parts[i] || 0) - (pb.parts[i] || 0);
     if (d) return Math.sign(d);
   }
-  return 0;
+  return pa.pre === pb.pre ? 0 : pa.pre > pb.pre ? 1 : -1;
 }
 
 /** `bun build --compile` output; `bun src/index.ts` also sets process.versions.bun, so check the embedded path. */

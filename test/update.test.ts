@@ -9,7 +9,15 @@ describe('compareVersions', () => {
     expect(compareVersions('0.10.0', '0.9.9')).toBe(1);
     expect(compareVersions('0.17.0', '0.17.0')).toBe(0);
     expect(compareVersions('0.17.0', '1.0.0')).toBe(-1);
-    expect(compareVersions('1.2.3-beta.1', '1.2.3')).toBe(0);
+  });
+
+  it('puts a release candidate before its release and orders candidates by number', () => {
+    expect(compareVersions('0.35.0-rc.1', '0.35.0')).toBe(-1);
+    expect(compareVersions('0.35.0', '0.35.0-rc.2')).toBe(1);
+    expect(compareVersions('0.35.0-rc.10', '0.35.0-rc.9')).toBe(1);
+    expect(compareVersions('0.35.0-rc.1', '0.35.0-rc.1')).toBe(0);
+    // Someone on a candidate is not told to "update" to the older stable version
+    expect(compareVersions('0.34.0', '0.35.0-rc.1')).toBe(-1);
   });
 });
 

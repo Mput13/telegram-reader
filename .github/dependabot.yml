@@ -2,11 +2,13 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    target-branch: next
     schedule: { interval: monthly }
     groups:
       actions: { patterns: ["*"] }
   - package-ecosystem: npm
     directory: /
+    target-branch: next
     schedule: { interval: weekly }
     ignore:
       # `typescript` is deliberately TS 6 (editor API); TS 7 is @typescript/native
