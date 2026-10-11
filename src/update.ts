@@ -120,7 +120,7 @@ export function maybeNotifyUpdate(argv = process.argv.slice(2)): void {
 
   const cache = readCache();
   if (cache?.latest && compareVersions(cache.latest, VERSION) > 0) {
-    process.stderr.write(`better-tg-cli ${cache.latest} is available (you have ${VERSION}): run \`telegram update\`\n`);
+    process.stderr.write(`Better-TG-CLI ${cache.latest} is available (you have ${VERSION}): run \`telegram update\`\n`);
   }
   if (!cache || Date.now() - cache.checkedAt > CHECK_INTERVAL_MS) {
     // Mark first so parallel runs don't all spawn a check.

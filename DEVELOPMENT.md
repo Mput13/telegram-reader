@@ -99,7 +99,7 @@ A dev profile can use:
   runs on Claude's built-in Node, an Electron utility process: its `execPath` is an app helper that
   won't start as Node, so there `telegram mcp` runs each call in a worker thread instead of a child
   process. `TG_MCP_WORKER=1` forces that path anywhere (the stdio e2e test runs both). Server logs:
-  `~/Library/Logs/Claude/mcp-server-Telegram (better-tg-cli).log`. Never launch binaries from
+  `~/Library/Logs/Claude/mcp-server-Telegram (Better-TG-CLI).log`. Never launch binaries from
   inside `Claude.app` to test this: it starts a second copy of the app.
 
 ## TypeScript

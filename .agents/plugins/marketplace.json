@@ -1,6 +1,6 @@
 {
   "name": "better-tg-cli",
-  "interface": { "displayName": "better-tg-cli" },
+  "interface": { "displayName": "Better-TG-CLI" },
   "plugins": [
     {
       "name": "better-tg-cli",

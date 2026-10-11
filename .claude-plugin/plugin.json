@@ -1,6 +1,6 @@
 {
   "name": "better-tg-cli",
-  "displayName": "better-tg-cli (Telegram)",
+  "displayName": "Better-TG-CLI (Telegram)",
   "description": "Telegram on your own account for AI agents (Claude Code, Grok Build): a skill for the telegram CLI plus an MCP server (read, search, send, bot buttons). Writes stay off until you allow them.",
   "author": {
     "name": "Sergei Polin",

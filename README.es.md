@@ -2,7 +2,7 @@
   <picture>
     <source srcset="https://raw.githubusercontent.com/TheVilfer/better-tg-cli/main/assets/banner-dark.png" media="(prefers-color-scheme: dark)"/>
     <source srcset="https://raw.githubusercontent.com/TheVilfer/better-tg-cli/main/assets/banner-light.png" media="(prefers-color-scheme: light)"/>
-    <img src="https://raw.githubusercontent.com/TheVilfer/better-tg-cli/main/assets/banner-light.png" alt="better-tg-cli"/>
+    <img src="https://raw.githubusercontent.com/TheVilfer/better-tg-cli/main/assets/banner-light.png" alt="Better-TG-CLI"/>
   </picture>
 
   [![npm version](https://img.shields.io/npm/v/better-tg-cli?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/better-tg-cli)

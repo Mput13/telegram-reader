@@ -1,6 +1,6 @@
 # Privacy
 
-better-tg-cli is a local program. It collects no analytics, and apart from the optional invite service
+Better-TG-CLI is a local program. It collects no analytics, and apart from the optional invite service
 there are no servers of ours in the path. Nobody but you sees your messages or your session.
 
 ## Network connections

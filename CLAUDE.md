@@ -1,4 +1,4 @@
-# Claude Instructions for better-tg-cli
+# Claude Instructions for Better-TG-CLI
 
 ## Version and Release Workflow
 

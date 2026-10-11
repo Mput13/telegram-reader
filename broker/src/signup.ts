@@ -168,7 +168,7 @@ export async function handleSignup(request: Request, env: Env, now = new Date(),
   const record: PendingCode = { codeHash: await codeHash(email, code), attempts: 0, sentAt: now.toISOString(), lang };
   await env.INVITES.put(`verify:${id}`, JSON.stringify(record), { expirationTtl: CODE_TTL_SECONDS });
   try {
-    await env.EMAIL!.send({ to: email, from: { email: env.MAIL_FROM!, name: 'better-tg-cli' }, ...codeMail(code, lang) });
+    await env.EMAIL!.send({ to: email, from: { email: env.MAIL_FROM!, name: 'Better-TG-CLI' }, ...codeMail(code, lang) });
   } catch {
     return json(502, { error: 'mail_failed' });
   }

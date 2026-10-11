@@ -1,9 +1,9 @@
 ---
 name: better-tg-cli
-description: Telegram on the user's own account through the `telegram` CLI (better-tg-cli). Read, search and send messages; read comments, threads and forum topics; press bot buttons; react, forward, pin, poll; manage chats, contacts and profile; watch live and export history. Use it when the user asks about Telegram messages, inbox or unread, wants to find something in chats, send or edit a message, talk to a bot, or manage a group or channel. Also «телеграм», «тг», «телега», «проверь телеграм», «что в тг», «напиши в телеграм», «прочитай чат», «найди в телеге».
+description: Telegram on the user's own account through the `telegram` CLI (Better-TG-CLI). Read, search and send messages; read comments, threads and forum topics; press bot buttons; react, forward, pin, poll; manage chats, contacts and profile; watch live and export history. Use it when the user asks about Telegram messages, inbox or unread, wants to find something in chats, send or edit a message, talk to a bot, or manage a group or channel. Also «телеграм», «тг», «телега», «проверь телеграм», «что в тг», «напиши в телеграм», «прочитай чат», «найди в телеге».
 ---
 
-# better-tg-cli
+# Better-TG-CLI
 
 `telegram <command>` runs on the user's own Telegram account (MTProto, not a bot). It works the same in any agent that has a shell. If the `telegram_read`, `telegram_write` and `telegram_help` MCP tools are available (`telegram mcp`), use them instead: they take the same argv as the CLI.
 
