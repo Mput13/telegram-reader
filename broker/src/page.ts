@@ -1,4 +1,4 @@
-/** The signup page at /: inline HTML, one nonce per response, only Turnstile and Google Fonts outside. */
+/** The signup page at /invite: inline HTML, one nonce per response, only Turnstile and Google Fonts outside. */
 
 import { escape, GUIDE_CSS, GUIDE_JS, guideHtml } from './guide';
 import { DICT, LANGS, type Dict, type Lang } from './i18n';
@@ -53,21 +53,25 @@ export function pageResponse({ open, siteKey, returnTo = null, lang = 'en', quer
 
 const SITE = 'https://better-tg-cli.com';
 
-/** Link-preview tags (Open Graph, X card), the favicon and the per-language alternates. */
-function cardMeta(lang: Lang, x: Dict['page']): string {
-  const url = lang === 'en' ? `${SITE}/` : `${SITE}/?lang=${lang}`;
+/** Where the signup page lives; / is the landing page (src/landing.ts). */
+export const INVITE_PATH = '/invite';
+
+/** Link-preview tags (Open Graph, X card), the favicon and the per-language alternates of the page at `path`. */
+export function cardMeta(lang: Lang, x: { title: string; description: string }, path: string): string {
+  const href = (l: Lang) => (l === 'en' ? `${SITE}${path}` : `${SITE}${path}?lang=${l}`);
+  const url = href(lang);
   const image = `${SITE}/og.png`;
   return [
     `<link rel="icon" href="/favicon.svg" type="image/svg+xml">`,
     `<link rel="canonical" href="${url}">`,
-    ...LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="${l === 'en' ? `${SITE}/` : `${SITE}/?lang=${l}`}">`),
-    `<link rel="alternate" hreflang="x-default" href="${SITE}/">`,
+    ...LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="${href(l)}">`),
+    `<link rel="alternate" hreflang="x-default" href="${SITE}${path}">`,
     `<meta property="og:type" content="website">`,
     `<meta property="og:site_name" content="Better-TG-CLI">`,
     `<meta property="og:title" content="${escape(x.title)}">`,
     `<meta property="og:description" content="${escape(x.description)}">`,
     `<meta property="og:url" content="${url}">`,
-    `<meta property="og:locale" content="${x.ogLocale}">`,
+    `<meta property="og:locale" content="${DICT[lang].page.ogLocale}">`,
     `<meta property="og:image" content="${image}">`,
     `<meta property="og:image:width" content="1280">`,
     `<meta property="og:image:height" content="640">`,
@@ -80,15 +84,26 @@ function cardMeta(lang: Lang, x: Dict['page']): string {
   ].join('\n');
 }
 
+/** Colour tokens, light and dark, shared with the landing page. */
+export const TOKENS_CSS = `:root{--bg:#fff;--fg:#0a0a0a;--dim:#6b6f73;--line:#e4e5e7;--panel:#fafafa;--accent:#1c93d1;--err:#c62828;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--fg:#f2f2f2;--dim:#8d9297;--line:#26282a;--panel:#0b0b0b;--accent:#2AABEE;--err:#ff6b6b;color-scheme:dark}}`;
+
+/** The pixel logo and the name. */
+export const BRAND = `<div class="brand"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect width="12" height="12" fill="currentColor"/><rect x="2" y="2" width="2" height="8" fill="var(--bg)"/><rect x="4" y="5" width="2" height="2" fill="var(--bg)"/><rect x="6" y="8" width="4" height="2" fill="var(--accent)"/></svg><span>BETTER-TG-CLI<i>.</i></span></div>`;
+
+/** The footer links, the same on every page. */
+export const footer = (x: Dict['page']) =>
+  `<footer>${escape(x.footerSource)}: <a href="https://github.com/TheVilfer/better-tg-cli">github.com/TheVilfer/better-tg-cli</a> · <a href="https://github.com/TheVilfer/better-tg-cli/blob/main/PRIVACY.md">${escape(x.footerPrivacy)}</a> · <a href="https://github.com/TheVilfer/better-tg-cli#code-signing-policy">Code signing policy</a></footer>`;
+
 /** Links to the same page in the other languages, keeping the rest of the query intact. */
-function langLinks(current: Lang, query: URLSearchParams, t: Dict): string {
+export function langLinks(current: Lang, query: URLSearchParams, t: Dict, path: string): string {
   const links = LANGS.map(l => {
     const q = new URLSearchParams(query);
     q.set('lang', l);
     const name = escape(DICT[l].langName);
     return l === current
       ? `<b aria-current="true">${name}</b>`
-      : `<a href="/?${escape(q.toString())}" hreflang="${l}" lang="${l}">${name}</a>`;
+      : `<a href="${path}?${escape(q.toString())}" hreflang="${l}" lang="${l}">${name}</a>`;
   });
   return `<nav class="langs" aria-label="${escape(t.page.language)}">${links.join('')}</nav>`;
 }
@@ -122,11 +137,10 @@ function page(nonce: string, open: boolean, siteKey: string, returnTo: string | 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escape(x.title)}</title>
 <meta name="description" content="${escape(x.description)}">
-${returnTo ? '<meta name="robots" content="noindex">\n' : ''}${cardMeta(lang, x)}
+${returnTo ? '<meta name="robots" content="noindex">\n' : ''}${cardMeta(lang, x, INVITE_PATH)}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&display=swap">
 <style nonce="${nonce}">
-:root{--bg:#fff;--fg:#0a0a0a;--dim:#6b6f73;--line:#e4e5e7;--panel:#fafafa;--accent:#1c93d1;--err:#c62828;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#000;--fg:#f2f2f2;--dim:#8d9297;--line:#26282a;--panel:#0b0b0b;--accent:#2AABEE;--err:#ff6b6b;color-scheme:dark}}
+${TOKENS_CSS}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 Geist,system-ui,sans-serif}
 main{max-width:620px;margin:0 auto;padding:56px 16px 72px}
@@ -155,6 +169,7 @@ button:disabled{opacity:.5;cursor:default}
 .err{color:var(--err);font-size:14px;margin:12px 0 0}
 .closed{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
 a{color:var(--accent)}
+.home{color:inherit;text-decoration:none}
 code,.mono{font-family:'Geist Mono',ui-monospace,monospace;font-size:.92em}
 .box{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px 14px 14px 16px;display:flex;gap:12px;align-items:flex-start}
 .box pre{margin:0;flex:1;min-width:0;white-space:pre-wrap;word-break:break-all;font:14px/1.6 'Geist Mono',ui-monospace,monospace}
@@ -166,8 +181,8 @@ ${GUIDE_CSS}
 footer{margin-top:56px;font-size:13px;color:var(--dim)}
 [hidden]{display:none!important}
 </style></head><body><main${returnTo ? ` data-return="${escape(returnTo)}"` : ''}>
-<div class="top"><div class="brand"><svg viewBox="0 0 12 12" shape-rendering="crispEdges" aria-hidden="true"><rect width="12" height="12" fill="currentColor"/><rect x="2" y="2" width="2" height="8" fill="var(--bg)"/><rect x="4" y="5" width="2" height="2" fill="var(--bg)"/><rect x="6" y="8" width="4" height="2" fill="var(--accent)"/></svg><span>BETTER-TG-CLI<i>.</i></span></div>
-${langLinks(lang, query, t)}</div>
+<div class="top">${returnTo ? BRAND : `<a class="home" href="/">${BRAND}</a>`}
+${langLinks(lang, query, t, INVITE_PATH)}</div>
 <h1>${escape(x.h1)}</h1>
 <p class="lead">${x.leadHtml}</p>
 ${returnTo ? `<p class="cli">${x.cliBannerHtml}</p>` : ''}
@@ -180,7 +195,7 @@ ${returnTo ? `<p class="cli">${x.cliBannerHtml}</p>` : ''}
   <p class="done-p"><a href="#guide">${escape(x.nextInstall)}</a></p>
 </section>
 ${guideHtml(t)}
-<footer>${escape(x.footerSource)}: <a href="https://github.com/TheVilfer/better-tg-cli">github.com/TheVilfer/better-tg-cli</a> · <a href="https://github.com/TheVilfer/better-tg-cli/blob/main/PRIVACY.md">${escape(x.footerPrivacy)}</a> · <a href="https://github.com/TheVilfer/better-tg-cli#code-signing-policy">Code signing policy</a></footer>
+${footer(x)}
 </main>
 ${open ? '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer nonce="' + nonce + '"></script>' : ''}
 <script nonce="${nonce}">

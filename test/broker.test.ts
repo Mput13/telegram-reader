@@ -109,14 +109,14 @@ describe('self-serve signup', () => {
       expect((await ask(e, 'a@b.co')).status).toBe(503);
       expect((await confirm(e, 'a@b.co', '123456')).status).toBe(503);
     }
-    const page = await handle(new Request('https://broker.test/'), off.e);
+    const page = await handle(new Request('https://broker.test/invite'), off.e);
     expect(page.status).toBe(200);
     expect(await page.text()).toContain('Signups are closed right now');
   });
 
   it('serves the form with a nonce CSP when open', async () => {
     const { e } = await open();
-    const res = await handle(new Request('https://broker.test/'), e);
+    const res = await handle(new Request('https://broker.test/invite'), e);
     const html = await res.text();
     expect(html).toContain('data-sitekey="site-key"');
     expect(html).toContain('autocomplete="one-time-code"');
@@ -129,7 +129,7 @@ describe('self-serve signup', () => {
 
   it('shows the install guide (Auto and PRO, one PRO tab per agent), open or closed', async () => {
     for (const { e } of [await open(), await env()]) {
-      const html = await (await handle(new Request('https://broker.test/'), e)).text();
+      const html = await (await handle(new Request('https://broker.test/invite'), e)).text();
       const tabs = [...html.matchAll(/role="tab" id="tab-([a-z-]+)"/g)].map(m => m[1]);
       expect(tabs).toEqual(['auto', 'pro', 'claude-code', 'codex', 'cursor', 'claude-desktop']);
       expect(html).toContain('telegram onboard --json'); // the Auto prompt
@@ -147,7 +147,7 @@ describe('self-serve signup', () => {
     expect(mails).toEqual([]);
   });
 
-  it('mails a code and gives a one-login invite only for the right code', async () => {
+  it('mails a code and gives a three-computer invite only for the right code', async () => {
     const { e, store, mails } = await open();
     const sent = await ask(e, '  Alice@Example.COM ');
     expect(sent.status).toBe(202);
@@ -169,13 +169,13 @@ describe('self-serve signup', () => {
     expect(keysBesides(store).some(k => k.startsWith('verify:'))).toBe(false); // the code is spent
 
     const rec = JSON.parse(store.get(`invite:${await sha256Hex(invite)}`)!);
-    expect(rec).toMatchObject({ name: 'alice@example.com', maxUses: 3, uses: 0, source: 'self-serve' });
+    expect(rec).toMatchObject({ name: 'alice@example.com', maxUses: 6, uses: 0, source: 'self-serve' });
     const email = JSON.parse(store.get(`email:${await sha256Hex('alice@example.com')}`)!);
     expect(email).toMatchObject({ email: 'alice@example.com', inviteKey: `invite:${await sha256Hex(invite)}` });
 
     expect((await confirm(e, 'alice@example.com', code)).status).toBe(410);
-    // A few logins, so a failed QR scan or a wrong 2FA password doesn't burn the invite
-    for (let i = 0; i < 3; i++) expect((await handle(post({ invite }), e)).status).toBe(200);
+    // Three computers with a spare request each, so a failed QR scan or a wrong 2FA password doesn't cost one
+    for (let i = 0; i < 6; i++) expect((await handle(post({ invite }), e)).status).toBe(200);
     expect((await handle(post({ invite }), e)).status).toBe(429);
   });
 
@@ -285,24 +285,24 @@ describe('self-serve signup', () => {
     ]) expect(loopbackReturn(bad)).toBeNull();
 
     const { e } = await open();
-    const html = async (q: string) => (await handle(new Request(`https://broker.test/?return=${encodeURIComponent(q)}`), e)).text();
+    const html = async (q: string) => (await handle(new Request(`https://broker.test/invite?return=${encodeURIComponent(q)}`), e)).text();
     expect(await html(good)).toContain(`data-return="${good}"`);
     expect(await html('https://evil.example/cb')).not.toContain('data-return');
   });
 
   it('serves link-preview tags, the og image and the favicon', async () => {
     const { e } = await open();
-    const html = await (await handle(new Request('https://broker.test/'), e)).text();
+    const html = await (await handle(new Request('https://broker.test/invite'), e)).text();
     expect(html).toContain('<meta property="og:image" content="https://better-tg-cli.com/og.png">');
     expect(html).toContain('<meta name="twitter:card" content="summary_large_image">');
-    expect(html).toContain('<meta property="og:url" content="https://better-tg-cli.com/">');
+    expect(html).toContain('<meta property="og:url" content="https://better-tg-cli.com/invite">');
     expect(html).toContain('rel="icon" href="/favicon.svg"');
     expect(html).not.toContain('noindex');
-    const es = await (await handle(new Request('https://broker.test/?lang=es'), e)).text();
+    const es = await (await handle(new Request('https://broker.test/invite?lang=es'), e)).text();
     expect(es).toContain('<meta property="og:locale" content="es_ES">');
-    expect(es).toContain('<link rel="canonical" href="https://better-tg-cli.com/?lang=es">');
+    expect(es).toContain('<link rel="canonical" href="https://better-tg-cli.com/invite?lang=es">');
     const cli = `http://127.0.0.1:54321/s/${'a'.repeat(43)}/cb`;
-    const fromCli = await (await handle(new Request(`https://broker.test/?return=${encodeURIComponent(cli)}`), e)).text();
+    const fromCli = await (await handle(new Request(`https://broker.test/invite?return=${encodeURIComponent(cli)}`), e)).text();
     expect(fromCli).toContain('noindex');
 
     const png = await handle(new Request('https://broker.test/og.png'), e);
@@ -315,10 +315,58 @@ describe('self-serve signup', () => {
     expect(await (await handle(new Request('https://broker.test/robots.txt'), e)).text()).toContain('Disallow: /v1/');
   });
 
+  describe('landing page', () => {
+    const page = (q = '', accept?: string) =>
+      handle(new Request(`https://broker.test/${q}`, { headers: accept ? { 'accept-language': accept } : {} }), {} as Env);
+
+    it('serves / without a form, Turnstile or any storage, under a nonce CSP', async () => {
+      const res = await page();
+      const html = await res.text();
+      expect(res.status).toBe(200);
+      expect(html).toContain('Telegram for your terminal and your AI agents');
+      expect(html).toContain('npm install -g better-tg-cli');
+      expect(html).toContain('npx skills add TheVilfer/better-tg-cli');
+      expect(html.match(/<button type="button" role="tab"/g)).toHaveLength(2);
+      expect(html).toContain('<a class="btn" href="/invite">');
+      expect(html.match(/<div class="tile/g)).toHaveLength(6);
+      expect(html).toContain('Log in on up to 3 computers');
+      expect(html).toContain('<h2 id="security">About security</h2>');
+      expect(html).toContain('<link rel="canonical" href="https://better-tg-cli.com/">');
+      expect(html).not.toContain('<form');
+      expect(html).not.toContain('challenges.cloudflare.com');
+      const csp = res.headers.get('content-security-policy')!;
+      expect(html).toContain(`<script nonce="${/'nonce-([^']+)'/.exec(csp)![1]}">`);
+      expect(csp).not.toContain('connect-src');
+      expect(csp).toContain("frame-ancestors 'none'");
+    });
+
+    it('speaks three languages and carries an explicit choice to the invite page', async () => {
+      const bare = (html: string) => html.replace(/<nav class="langs".*?<\/nav>/s, '');
+      expect(bare(await (await page()).text())).not.toMatch(/[А-Яа-яЁё]/);
+      const es = await (await page('?lang=es')).text();
+      expect(es).toContain('<html lang="es">');
+      expect(es).toContain('href="/invite?lang=es"');
+      expect(bare(es)).not.toMatch(/[А-Яа-яЁё]/);
+      const ru = await (await page('', 'ru-RU,ru;q=0.9')).text();
+      expect(ru).toContain('Получить инвайт');
+      expect(ru).toContain('<a class="btn" href="/invite">');
+      expect(ru).toContain('<a href="/?lang=en" hreflang="en"');
+    });
+
+    it('sends the old signup addresses on to /invite with their query', async () => {
+      const cli = '?return=' + encodeURIComponent('http://127.0.0.1:54321/s/' + 'a'.repeat(43) + '/cb');
+      for (const q of [cli, '?agent=codex', '?mode=pro&lang=ru']) {
+        const res = await page(q);
+        expect(res.status).toBe(302);
+        expect(res.headers.get('location')).toBe(`https://broker.test/invite${q}`);
+      }
+    });
+  });
+
   describe('languages', () => {
     const CYRILLIC = /[А-Яа-яЁё]/;
     const get = async (e: Env, q = '', accept?: string) =>
-      handle(new Request(`https://broker.test/${q}`, { headers: accept ? { 'accept-language': accept } : {} }), e);
+      handle(new Request(`https://broker.test/invite${q}`, { headers: accept ? { 'accept-language': accept } : {} }), e);
 
     it('picks ?lang=, then Accept-Language, then English', () => {
       expect(pickLang(null, null)).toBe('en');
@@ -351,7 +399,7 @@ describe('self-serve signup', () => {
       const { e } = await open();
       const back = 'http://127.0.0.1:54321/s/' + 'a'.repeat(43) + '/cb';
       const html = await (await get(e, `?return=${encodeURIComponent(back)}&agent=codex`)).text();
-      const links = [...html.matchAll(/<a href="\/\?([^"]+)" hreflang="(\w+)"/g)];
+      const links = [...html.matchAll(/<a href="\/invite\?([^"]+)" hreflang="(\w+)"/g)];
       expect(links.map(m => m[2])).toEqual(['es', 'ru']);
       for (const [, q, l] of links) {
         const params = new URLSearchParams(q.replace(/&amp;/g, '&'));

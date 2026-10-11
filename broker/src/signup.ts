@@ -1,6 +1,6 @@
 /**
- * Self-serve invites: the page at / trades a verified email (kept only for notifications) for a
- * one-login invite: a six-digit code goes to the address, and only the code gets the invite. Asking
+ * Self-serve invites: the page at /invite trades a verified email (kept only for notifications) for a
+ * invite good for a few computers: a six-digit code goes to the address, and only the code gets the invite. Asking
  * again with the same address replaces the invite (a lost token, a session Telegram ended). This hands the maintainer's app keys to strangers, so every guard fails closed:
  * signups are off unless KV `config:signups` is "on", Turnstile must pass server-side, and there
  * are per-IP, per-email and daily caps (Worker secrets, see LIMIT_DEFAULTS). `invite.mjs signups off` closes the page; `/v1/credentials` and
@@ -70,8 +70,11 @@ async function bump(env: Env, key: string, cap: number): Promise<boolean> {
   return true;
 }
 
-// A few logins, so a timed-out QR scan or a wrong 2FA password doesn't burn the invite
-const SELF_SERVE_LOGINS = 3;
+// One invite logs in up to three computers. The broker only sees credential requests, not whether a
+// login worked, so each computer gets a spare one: a timed-out QR scan or a wrong 2FA password
+// doesn't cost a computer
+export const SELF_SERVE_COMPUTERS = 3;
+const SELF_SERVE_LOGINS = SELF_SERVE_COMPUTERS * 2;
 const CODE_TTL_SECONDS = 15 * 60;
 const CODE_ATTEMPTS = 5;
 const RESEND_AFTER_MS = 60_000;
@@ -175,7 +178,7 @@ export async function handleSignup(request: Request, env: Env, now = new Date(),
   return json(202, { status: 'code_sent' });
 }
 
-/** Step 2: email + code → the one-login invite, replacing an earlier one. Five wrong codes burn the pending code. */
+/** Step 2: email + code → the invite (SELF_SERVE_COMPUTERS computers), replacing an earlier one. Five wrong codes burn the pending code. */
 export async function handleVerify(request: Request, env: Env, now = new Date()): Promise<Response> {
   const closed = await gate(request, env);
   if (closed) return closed;
