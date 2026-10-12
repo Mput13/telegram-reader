@@ -104,7 +104,7 @@ describe('telegram onboard server', () => {
     expect(res.body).toContain(`https://site.test/?return=${encodeURIComponent(session!.url + 'cb')}`);
     expect((await call(session!.url + 'cb')).status).toBe(200);
     // English, Spanish and Russian strings; the page picks one from navigator.languages
-    for (const s of ['Get an invite', 'Obtener una invitación', 'Получить инвайт']) expect(res.body).toContain(s);
+    for (const s of ['Get a login key', 'Obtener una clave de acceso', 'Получить ключ входа']) expect(res.body).toContain(s);
   });
 
   it('goes invite → QR → password → done, and saves only at the end', async () => {

@@ -42,7 +42,7 @@ export async function getClient(): Promise<TelegramClient> {
     const invited = loadConfig(() => {}).credentialSource === 'invite';
     throw new Error(
       invited
-        ? 'Session expired or was revoked. Log in again: telegram logout && telegram auth --invite'
+        ? 'Session expired or was revoked. Log in again: telegram logout && telegram auth --login-key'
         : 'Not authenticated. Run "telegram onboard" or "telegram auth --qr" to log in.'
     );
   }

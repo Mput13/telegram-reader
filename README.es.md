@@ -169,10 +169,10 @@ npx skills add TheVilfer/better-tg-cli -g -a claude-code -a codex -y
 ## Inicio de sesión
 
 **A través de tu agente** (lo más fácil): pídele que configure Telegram o ejecuta tú mismo
-`telegram onboard`. Abre una página en 127.0.0.1 donde obtienes una invitación de
+`telegram onboard`. Abre una página en 127.0.0.1 donde obtienes una clave de acceso de
 [better-tg-cli.com](https://better-tg-cli.com) (vuelve sola a la página) o introduces tus propias
 claves, escaneas un código QR y escribes tu contraseña de 2FA. El agente solo lanza el comando y
-espera: nunca ve la invitación, el código QR ni la contraseña. La página solo responde en una ruta
+espera: nunca ve la clave de acceso, el código QR ni la contraseña. La página solo responde en una ruta
 secreta aleatoria y se cierra cuando terminas.
 
 **Con tus propias claves de API** (la opción por defecto):
@@ -183,13 +183,14 @@ secreta aleatoria y se cierra cuando terminas.
    inicio de sesión. Si el QR no se escanea con un tema claro del terminal, ejecútalo con
    `TG_QR_INVERT=1`.
 
-**Con una invitación.** Con un token de invitación no necesitas tus propias claves. Consigue uno en
-[better-tg-cli.com](https://better-tg-cli.com) (confirma tu correo con un código; la página está en
-ruso y también tiene una guía de instalación) o pídeselo al mantenedor.
-Ejecuta `telegram auth --invite --qr` y pega el token, o pásalo como `TG_INVITE=…` o `--invite -`. El
-servicio de invitaciones (`broker/`) entrega las claves de la aplicación una sola vez, solo para este
-inicio de sesión. El `api_hash` no se guarda en tu máquina. Las invitaciones son personales, permiten
-un número limitado de inicios de sesión y pueden revocarse.
+**Con una clave de acceso.** Con una clave de acceso no necesitas tus propias claves de API. Consigue
+una en [better-tg-cli.com](https://better-tg-cli.com/login) (confirma tu correo con un código; la
+página también tiene una guía de instalación) o pídesela al mantenedor.
+Ejecuta `telegram auth --login-key --qr` y pega la clave, o pásala como `TG_LOGIN_KEY=…` o
+`--login-key -`. El servicio de acceso (`broker/`) entrega las claves de la aplicación una sola vez,
+solo para este inicio de sesión. El `api_hash` no se guarda en tu máquina. Las claves de acceso son
+personales, sirven en hasta 3 equipos y pueden revocarse. Antes de la 0.37 la clave se llamaba
+invitación: `--invite` y `TG_INVITE` siguen funcionando.
 
 La sesión se guarda en el Keychain de macOS (servicio `tg-cli`) o en 1Password con
 `--op-vault <vault>`. `telegram logout` la elimina. En Linux va al Secret Service (GNOME Keyring,
@@ -301,10 +302,10 @@ Solo después de que actives la escritura. `telegram write-access on` te pide qu
 No. `read`, `inbox` y `search` dejan los chats sin leer. Solo `telegram mark-read` los marca.
 
 **¿Necesito mis propias claves de API?**
-Sí, de [my.telegram.org/apps](https://my.telegram.org/apps). Son gratuitas y se crean en un minuto. Con una invitación de [better-tg-cli.com](https://better-tg-cli.com), `telegram auth --invite --qr` te permite iniciar sesión sin ellas.
+Sí, de [my.telegram.org/apps](https://my.telegram.org/apps). Son gratuitas y se crean en un minuto. Con una clave de acceso de [better-tg-cli.com](https://better-tg-cli.com/login), `telegram auth --login-key --qr` te permite iniciar sesión sin ellas.
 
 **¿Dónde se guarda mi sesión y quién puede ver mis mensajes?**
-La sesión está en el Keychain de macOS, en el Secret Service de Linux o en 1Password. El CLI habla directamente con Telegram y no tiene analíticas. Los únicos otros hosts son npm, para una comprobación diaria de versión, y el servicio de invitaciones al iniciar sesión. Consulta [PRIVACY.md](PRIVACY.md).
+La sesión está en el Keychain de macOS, en el Secret Service de Linux o en 1Password. El CLI habla directamente con Telegram y no tiene analíticas. Los únicos otros hosts son npm, para una comprobación diaria de versión, y el servicio de acceso cuando inicias sesión con una clave de acceso. Consulta [PRIVACY.md](PRIVACY.md).
 
 **¿Puedo usar varias cuentas?**
 Sí, con `TG_PROFILE`: cada perfil tiene su propio inicio de sesión, configuración y elementos del Keychain, por ejemplo `TG_PROFILE=work telegram auth --qr`. El cambio de cuenta propiamente dicho se sigue en [#5](https://github.com/TheVilfer/better-tg-cli/issues/5).
@@ -349,7 +350,7 @@ MCP Registry. Consulta
 
 ## Privacidad
 
-Sin analíticas. El único servicio que operamos es el broker de invitaciones opcional, que nunca ve
+Sin analíticas. El único servicio que operamos es el servicio de acceso opcional, que nunca ve
 tus mensajes ni tu sesión. Consulta [PRIVACY.md](PRIVACY.md) para conocer los tres hosts con los que
 habla el CLI y lo que guarda localmente.
 
@@ -363,8 +364,8 @@ Hasta entonces, el `telegram.exe` de Windows no está firmado; los binarios de m
 
 - Committers y revisores: [@TheVilfer](https://github.com/TheVilfer)
 - Aprobadores (cada release firmada): [@TheVilfer](https://github.com/TheVilfer)
-- Política de privacidad: [PRIVACY.md](PRIVACY.md). El CLI solo habla con Telegram, con el broker de
-  invitaciones cuando inicias sesión con una invitación y con el registro de npm para una
+- Política de privacidad: [PRIVACY.md](PRIVACY.md). El CLI solo habla con Telegram, con el servicio de
+  acceso cuando inicias sesión con una clave de acceso y con el registro de npm para una
   comprobación diaria de actualizaciones en un terminal (se desactiva con `TG_NO_UPDATE_CHECK=1`).
 
 ## Licencia

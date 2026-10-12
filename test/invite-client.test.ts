@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_BROKER_URL, fetchInviteCredentials } from '../src/broker.js';
+import { authCommand } from '../src/commands/auth.js';
 
 const reply = (status: number, body: unknown) =>
   vi.fn(async () => new Response(JSON.stringify(body), { status })) as unknown as typeof fetch;
@@ -31,5 +32,15 @@ describe('invite login client', () => {
       throw new Error('ECONNREFUSED');
     }) as unknown as typeof fetch;
     await expect(fetchInviteCredentials('x', 'https://b.test', f)).rejects.toThrow(/b\.test.*ECONNREFUSED/);
+  });
+});
+
+describe('telegram auth --login-key', () => {
+  it('shows --login-key in help and keeps --invite, its name until 0.36, as a hidden synonym', () => {
+    const option = (flag: string) => authCommand.options.find(o => o.long === flag);
+    expect(option('--login-key')?.hidden).toBe(false);
+    expect(option('--invite')?.hidden).toBe(true);
+    expect(authCommand.helpInformation()).toContain('--login-key [key]');
+    expect(authCommand.helpInformation()).not.toContain('--invite');
   });
 });

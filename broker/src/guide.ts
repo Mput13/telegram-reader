@@ -145,7 +145,7 @@ function proHtml(t: Dict): string {
   ${p(x.installText)}${code('brew install thevilfer/tap/better-tg-cli', t.client.copy)}
   <p class="note">${x.installNoteHtml}</p></li>
 <li><h3>${escape(x.loginTitle)}</h3>
-  ${p(x.loginText)}${code('telegram auth --invite --qr', t.client.copy)}<p class="note">${x.loginNoteHtml}</p></li>
+  ${p(x.loginText)}${code('telegram auth --login-key --qr', t.client.copy)}<p class="note">${x.loginNoteHtml}</p></li>
 <li><h3>${escape(x.connectTitle)}</h3>${agents}</li>
 <li><h3>${escape(x.doneTitle)}</h3>
   ${p(x.proDoneText)}${code('telegram write-access on --for 1h', t.client.copy)}</li>

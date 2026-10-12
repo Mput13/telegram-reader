@@ -1,7 +1,11 @@
 # Invite broker
 
 A Cloudflare Worker that gives invited users the maintainer's `api_id`/`api_hash` at login time
-(`telegram auth --invite`). Open-source users bring their own keys and never touch this.
+(`telegram auth --login-key`). Open-source users bring their own keys and never touch this.
+
+People see an invite as a **login key** (the site, the CLI and the README call it that). The API,
+KV, error codes and `scripts/invite.mjs` keep the word invite, because released versions of the CLI
+speak that wire format.
 
 - Endpoint: `POST /v1/credentials` with body `{"invite": "<token>"}`. It returns `{apiId, apiHash}`
   and `Cache-Control: no-store`.
@@ -12,8 +16,9 @@ A Cloudflare Worker that gives invited users the maintainer's `api_id`/`api_hash
 - Secrets are `API_ID` and `API_HASH` (`wrangler secret put`). Logging is off, since request
   bodies carry invite tokens.
 - `GET /` is the landing page (`src/landing.ts`: what the tool is, the install command, a link to the
-  invite page) and `GET /invite` is the signup page (see below). `/?return=`, `/?mode=` and `/?agent=`
-  redirect to `/invite`, because released versions of `telegram onboard` open the root. There is no admin HTTP endpoint. Invites are managed locally through wrangler.
+  login page) and `GET /login` is the signup page (see below). `/invite` (its address until 0.36),
+  `/?return=`, `/?mode=` and `/?agent=` redirect to `/login`, because released versions of
+  `telegram onboard` and old links arrive there. There is no admin HTTP endpoint. Invites are managed locally through wrangler.
 - Deployed at `https://tg-cli-broker.login-c2d.workers.dev` (Cloudflare account "Anything* team"); the
   pages are also on `https://better-tg-cli.com` (custom domain, `www` redirects there).
 
@@ -50,7 +55,7 @@ node scripts/invite.mjs revoke-all --self-serve # revoke only page invites
 ```
 
 The page tells people to have their agent install the CLI and skill, and to run
-`telegram auth --invite` themselves. The token never goes into an agent prompt or argv.
+`telegram auth --login-key` themselves. The token never goes into an agent prompt or argv.
 
 Local run: put `TURNSTILE_SECRET=1x0000000000000000000000000000000AA` (Cloudflare's always-pass test
 secret) with fake `API_ID`/`API_HASH` into `broker/.dev.vars` (gitignored), then

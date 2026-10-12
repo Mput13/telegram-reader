@@ -2,7 +2,7 @@ name = "tg-cli-broker"
 main = "src/index.ts"
 compatibility_date = "2026-09-01"
 workers_dev = true
-# The landing page and the signup page (/invite) live on better-tg-cli.com; www redirects there. The CLI keeps using workers.dev.
+# The landing page and the signup page (/login) live on better-tg-cli.com; www redirects there. The CLI keeps using workers.dev.
 routes = [
   { pattern = "better-tg-cli.com", custom_domain = true },
   { pattern = "www.better-tg-cli.com", custom_domain = true },

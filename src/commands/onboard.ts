@@ -7,7 +7,7 @@ import { ONBOARD_SITE, startOnboarding, type OnboardEvent } from '../onboard.js'
 
 const HUMAN: Record<OnboardEvent['event'], (e: never) => string> = {
   url: (e: { url: string }) => `Open this page to log in (it stays on this computer): ${e.url}`,
-  waiting_invite: () => 'Waiting for an invite or API keys on the page…',
+  waiting_invite: () => 'Waiting for a login key or API keys on the page…',
   waiting_scan: () => 'Waiting for the QR scan (Telegram → Settings → Devices → Link Desktop Device)…',
   need_password: () => 'Waiting for the two-step verification password on the page…',
   done: (e: { user: { name: string; username?: string } }) =>
@@ -26,11 +26,11 @@ function openBrowser(url: string): void {
 }
 
 export const onboardCommand = new Command('onboard')
-  .description('Guided login for agents: opens a local page where you get an invite (or use your own keys), scan a QR code and enter your 2FA password; the agent never sees any of it')
+  .description('Guided login for agents: opens a local page where you get a login key (or use your own keys), scan a QR code and enter your 2FA password; the agent never sees any of it')
   .option('--json', 'Print progress as JSON lines (events: url, waiting_invite, waiting_scan, need_password, done, error)')
   .option('--no-open', "Don't open the browser, just print the URL")
   .option('--timeout <minutes>', 'Give up after this many minutes', '15')
-  .option('--broker <url>', 'Invite service URL (default: built-in, or TG_BROKER_URL)')
+  .option('--broker <url>', 'Login service URL (default: built-in, or TG_BROKER_URL)')
   .option('--test-dc', "Log in on Telegram's test servers (for development; use with TG_PROFILE)")
   .action(async (opts: { json?: boolean; open: boolean; timeout: string; broker?: string; testDc?: boolean }) => {
     const emit = (e: OnboardEvent) => {

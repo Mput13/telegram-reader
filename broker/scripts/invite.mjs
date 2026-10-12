@@ -40,7 +40,7 @@ if (cmd === 'create' && name) {
   put(key, JSON.stringify(record));
   if (get(key)?.name !== name) throw new Error('Write did not read back from remote KV');
   console.log(`Invite for "${name}" (max ${maxUses} logins). Shown once, send it privately:\n\n${token}\n`);
-  console.log(`They run: telegram auth --invite   (and paste the token when asked)`);
+  console.log(`They run: telegram auth --login-key   (and paste the key when asked)`);
 } else if (cmd === 'list') {
   for (const key of keys()) {
     const r = get(key);

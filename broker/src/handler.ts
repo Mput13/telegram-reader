@@ -4,7 +4,7 @@
  */
 import { ICON_SVG, OG_PNG_BASE64 } from './assets';
 import { landingResponse } from './landing';
-import { INVITE_PATH, loopbackReturn, pageResponse } from './page';
+import { LOGIN_PATH, loopbackReturn, OLD_LOGIN_PATH, pageResponse } from './page';
 import { pickLang } from './i18n';
 import { handleSignup, handleVerify, signupsOpen } from './signup';
 
@@ -81,14 +81,17 @@ export async function handle(request: Request, env: Env, now = new Date()): Prom
   if (url.pathname === '/' && request.method === 'GET') {
     // The signup page used to live here: telegram onboard (?return=) and guide links (?mode=, ?agent=) still arrive at /
     if (['return', 'mode', 'agent'].some(p => url.searchParams.has(p))) {
-      return Response.redirect(`${url.origin}${INVITE_PATH}${url.search}`, 302);
+      return Response.redirect(`${url.origin}${LOGIN_PATH}${url.search}`, 302);
     }
     return landingResponse({
       lang: pickLang(url.searchParams.get('lang'), request.headers.get('accept-language')),
       query: url.searchParams,
     });
   }
-  if (url.pathname === INVITE_PATH && request.method === 'GET') {
+  if (url.pathname === OLD_LOGIN_PATH && request.method === 'GET') {
+    return Response.redirect(`${url.origin}${LOGIN_PATH}${url.search}`, 302);
+  }
+  if (url.pathname === LOGIN_PATH && request.method === 'GET') {
     return pageResponse({
       open: await signupsOpen(env),
       siteKey: env.TURNSTILE_SITE_KEY,
