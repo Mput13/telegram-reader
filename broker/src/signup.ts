@@ -1,5 +1,5 @@
 /**
- * Self-serve invites: the page at /invite trades a verified email (kept only for notifications) for a
+ * Self-serve invites: the page at /login trades a verified email (kept only for notifications) for a
  * invite good for a few computers: a six-digit code goes to the address, and only the code gets the invite. Asking
  * again with the same address replaces the invite (a lost token, a session Telegram ended). This hands the maintainer's app keys to strangers, so every guard fails closed:
  * signups are off unless KV `config:signups` is "on", Turnstile must pass server-side, and there

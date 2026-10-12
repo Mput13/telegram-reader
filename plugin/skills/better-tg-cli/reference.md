@@ -142,13 +142,13 @@ matches titles.
 ## Troubleshooting
 
 - `Not configured`: run `telegram onboard --json`. It serves a one-shot page on 127.0.0.1 (random
-  secret path, closes when done, `--timeout` 15 min by default) where the user gets an invite from
+  secret path, closes when done, `--timeout` 15 min by default) where the user gets a login key from
   better-tg-cli.com (it comes back to the page by itself), or enters their own keys, then scans a QR
   code and types their 2FA password. Events: `url`, `waiting_invite`, `waiting_scan`, `need_password`,
   `done` (exit 0), `error`, `timeout` (exit 1); `already_logged_in` exits 0 without changes.
   `--no-open` only prints the URL. You never get tokens, codes or passwords, and you must not ask
   for them or fill in the page. Without a browser on this machine (SSH), the user runs
-  `telegram auth --qr` (own keys) or `telegram auth --invite --qr` in their terminal; that is
+  `telegram auth --qr` (own keys) or `telegram auth --login-key --qr` in their terminal; that is
   interactive, so never run it for them. `--qr` logs in by scanning a QR code in the Telegram app instead of
   typing a code (`TG_QR_INVERT=1` for light terminals).
 

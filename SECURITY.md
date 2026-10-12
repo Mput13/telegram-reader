@@ -13,8 +13,8 @@ not in public issues.
 - **Writes:** off by default. `write-access on` requires a human to confirm it, in a terminal prompt
   or a macOS/Windows dialog, and can expire (`--for 1h`). Every write is appended to
   `~/.config/tg/audit.jsonl`.
-- **Invites:** the broker hands out the app's `api_hash` for a single login. It is not stored
-  locally. Tokens are stored hashed, limited in uses and revocable.
+- **Login keys:** the broker hands out the app's `api_hash` for a single login. It is not stored
+  locally. Login keys are stored hashed, limited in uses and revocable.
 
 ## Agents and prompt injection
 
@@ -46,7 +46,7 @@ seeing any secret. Any site open in the same browser can send requests to localh
 - nothing is written to disk until Telegram accepts the login, and the server shuts down afterwards
   or after the timeout.
 
-better-tg-cli.com sends the invite back to this page in the URL fragment, which never reaches a
+better-tg-cli.com sends the login key back to this page in the URL fragment, which never reaches a
 server. It only redirects to `http://127.0.0.1:<port>/s/<secret>/cb`; any other `?return=` is
 ignored.
 

@@ -1,8 +1,8 @@
-/** The landing page at /: what the tool is, one install command, the way to an invite. No forms, no Turnstile. */
+/** The landing page at /: what the tool is, one install command, the way to a login key. No forms, no Turnstile. */
 
 import { a, b, code, d, escape, SCREEN_CSS, terminal } from './guide';
 import { DICT, type Dict, type Lang } from './i18n';
-import { BRAND, cardMeta, footer, INVITE_PATH, langLinks, TOKENS_CSS } from './page';
+import { BRAND, cardMeta, footer, langLinks, LOGIN_PATH, TOKENS_CSS } from './page';
 
 /** The two ways in: the CLI itself, or the agent skill through skills.sh (it tells the agent to install the CLI). */
 const INSTALL = { cli: 'npm install -g better-tg-cli', skill: 'npx skills add TheVilfer/better-tg-cli' } as const;
@@ -11,7 +11,7 @@ const REPO = 'https://github.com/TheVilfer/better-tg-cli';
 
 export interface LandingOptions {
   lang?: Lang;
-  /** The request's query: the language links keep it, and an explicit ?lang= follows the visitor to the invite page */
+  /** The request's query: the language links keep it, and an explicit ?lang= follows the visitor to the login page */
   query?: URLSearchParams;
 }
 
@@ -90,19 +90,19 @@ function security(x: Dict['landing']): string {
 <p class="own">${escape(x.securityMore)}: <a href="${REPO}/blob/main/SECURITY.md">${escape(x.securityDoc)}</a> · <a href="${REPO}/blob/main/PRIVACY.md">${escape(x.privacyDoc)}</a></p>`;
 }
 
-/** What an invite is and the three steps to one. */
-function invites(x: Dict['landing'], href: string): string {
-  return `<h2 id="invites">${escape(x.invitesTitle)}</h2>
-<p class="how">${escape(x.invitesLead)}</p>
+/** What a login key is and the three steps to one. */
+function login(x: Dict['landing'], href: string): string {
+  return `<h2 id="login">${escape(x.loginTitle)}</h2>
+<p class="how">${escape(x.loginLead)}</p>
 <ol class="steps">${x.steps.map(s => `<li><h3>${escape(s.title)}</h3><p>${escape(s.text)}</p></li>`).join('')}</ol>
 <p class="own">${escape(x.ownKeys)} <code>telegram auth</code>.</p>
-<div class="cta"><a class="btn" href="${href}">${escape(x.invite)}</a></div>`;
+<div class="cta"><a class="btn" href="${href}">${escape(x.cta)}</a></div>`;
 }
 
 function landing(nonce: string, lang: Lang, query: URLSearchParams): string {
   const t = DICT[lang];
   const x = t.landing;
-  const invite = query.has('lang') ? `${INVITE_PATH}?lang=${lang}` : INVITE_PATH;
+  const href = query.has('lang') ? `${LOGIN_PATH}?lang=${lang}` : LOGIN_PATH;
 
   return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -184,13 +184,13 @@ ${langLinks(lang, query, t, '/')}</div>
 <h1>${escape(x.h1)}</h1>
 <p class="lead">${escape(x.lead)}</p>
 ${install(t)}
-<div class="cta"><a class="btn" href="${invite}">${escape(x.invite)}</a><a class="gh" href="${REPO}">GitHub ↗</a></div>
-<p class="note">${escape(x.inviteNote)}</p>
+<div class="cta"><a class="btn" href="${href}">${escape(x.cta)}</a><a class="gh" href="${REPO}">GitHub ↗</a></div>
+<p class="note">${escape(x.ctaNote)}</p>
 ${screen(t)}
 <ul class="facts">${x.facts.map(f => `<li>${escape(f)}</li>`).join('')}</ul>
 ${bento(x)}
 ${security(x)}
-${invites(x, invite)}
+${login(x, href)}
 ${footer(t.page)}
 </main>
 <script nonce="${nonce}">

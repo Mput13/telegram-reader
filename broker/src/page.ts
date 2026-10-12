@@ -1,4 +1,4 @@
-/** The signup page at /invite: inline HTML, one nonce per response, only Turnstile and Google Fonts outside. */
+/** The signup page at /login: inline HTML, one nonce per response, only Turnstile and Google Fonts outside. */
 
 import { escape, GUIDE_CSS, GUIDE_JS, guideHtml } from './guide';
 import { DICT, LANGS, type Dict, type Lang } from './i18n';
@@ -54,7 +54,9 @@ export function pageResponse({ open, siteKey, returnTo = null, lang = 'en', quer
 const SITE = 'https://better-tg-cli.com';
 
 /** Where the signup page lives; / is the landing page (src/landing.ts). */
-export const INVITE_PATH = '/invite';
+export const LOGIN_PATH = '/login';
+/** Where the page lived until 0.36: released CLIs, emails and READMEs still point there */
+export const OLD_LOGIN_PATH = '/invite';
 
 /** Link-preview tags (Open Graph, X card), the favicon and the per-language alternates of the page at `path`. */
 export function cardMeta(lang: Lang, x: { title: string; description: string }, path: string): string {
@@ -127,7 +129,7 @@ function page(nonce: string, open: boolean, siteKey: string, returnTo: string | 
   <label for="code">${escape(x.codeLabel)}</label>
   <p class="hint vhint">${escape(x.codeHintBefore)} <b id="sent-to"></b>. ${escape(x.codeHintAfter)}</p>
   <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="7" required placeholder="123456" class="code">
-  <div class="vrow"><button id="vgo" type="submit">${escape(x.getInvite)}</button>
+  <div class="vrow"><button id="vgo" type="submit">${escape(x.getKey)}</button>
   <button id="back" type="button" class="link">${escape(x.changeEmail)}</button></div>
   <p id="verr" class="err" role="alert" hidden></p>
 </form>`
@@ -137,7 +139,7 @@ function page(nonce: string, open: boolean, siteKey: string, returnTo: string | 
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escape(x.title)}</title>
 <meta name="description" content="${escape(x.description)}">
-${returnTo ? '<meta name="robots" content="noindex">\n' : ''}${cardMeta(lang, x, INVITE_PATH)}
+${returnTo ? '<meta name="robots" content="noindex">\n' : ''}${cardMeta(lang, x, LOGIN_PATH)}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono&display=swap">
 <style nonce="${nonce}">
 ${TOKENS_CSS}
@@ -182,7 +184,7 @@ footer{margin-top:56px;font-size:13px;color:var(--dim)}
 [hidden]{display:none!important}
 </style></head><body><main${returnTo ? ` data-return="${escape(returnTo)}"` : ''}>
 <div class="top">${returnTo ? BRAND : `<a class="home" href="/">${BRAND}</a>`}
-${langLinks(lang, query, t, INVITE_PATH)}</div>
+${langLinks(lang, query, t, LOGIN_PATH)}</div>
 <h1>${escape(x.h1)}</h1>
 <p class="lead">${x.leadHtml}</p>
 ${returnTo ? `<p class="cli">${x.cliBannerHtml}</p>` : ''}

@@ -164,9 +164,9 @@ npx skills add TheVilfer/better-tg-cli -g -a claude-code -a codex -y
 ## Log in
 
 **Through your agent** (easiest): ask it to set up Telegram, or run `telegram onboard` yourself. It
-opens a page on 127.0.0.1 where you get an invite from [better-tg-cli.com](https://better-tg-cli.com)
+opens a page on 127.0.0.1 where you get a login key from [better-tg-cli.com](https://better-tg-cli.com)
 (it comes back to the page by itself) or enter your own keys, scan a QR code and type your 2FA
-password. The agent only starts the command and waits: it never sees the invite, the QR code or the
+password. The agent only starts the command and waits: it never sees the login key, the QR code or the
 password. The page answers only on a random secret path and closes when you're done.
 
 **With your own API keys** (the default):
@@ -176,12 +176,13 @@ password. The page answers only on a random secret path and closes when you're d
    `telegram auth` asks for your phone number and a login code instead. If the QR won't scan on a
    light terminal theme, run with `TG_QR_INVERT=1`.
 
-**With an invite.** You don't need your own keys with an invite token. Get one at
-[better-tg-cli.com](https://better-tg-cli.com) (confirm your email with a code; the page is in Russian
-and also has an install guide), or from the maintainer.
-Run `telegram auth --invite --qr` and paste the token, or pass it as `TG_INVITE=…` or `--invite -`. The
-invite service (`broker/`) hands out the app's keys once, for this login only. The `api_hash` is not
-kept on your machine. Invites are personal, allow a limited number of logins, and can be revoked.
+**With a login key.** You don't need your own keys with a login key. Get one at
+[better-tg-cli.com](https://better-tg-cli.com/login) (confirm your email with a code; the page also
+has an install guide), or from the maintainer.
+Run `telegram auth --login-key --qr` and paste the key, or pass it as `TG_LOGIN_KEY=…` or
+`--login-key -`. The login service (`broker/`) hands out the app's keys once, for this login only.
+The `api_hash` is not kept on your machine. Login keys are personal, work on up to 3 computers, and
+can be revoked. Before 0.37 the key was called an invite: `--invite` and `TG_INVITE` still work.
 
 The session is stored in the macOS Keychain (service `tg-cli`), or in 1Password with
 `--op-vault <vault>`. `telegram logout` removes it. On Linux it goes to the Secret Service (GNOME
@@ -290,10 +291,10 @@ Only after you turn writes on. `telegram write-access on` asks you to confirm in
 No. `read`, `inbox` and `search` leave chats unread. Only `telegram mark-read` marks them.
 
 **Do I need my own API keys?**
-Yes, from [my.telegram.org/apps](https://my.telegram.org/apps). They are free and take a minute to create. With an invite from [better-tg-cli.com](https://better-tg-cli.com), `telegram auth --invite --qr` logs you in without them.
+Yes, from [my.telegram.org/apps](https://my.telegram.org/apps). They are free and take a minute to create. With a login key from [better-tg-cli.com](https://better-tg-cli.com/login), `telegram auth --login-key --qr` logs you in without them.
 
 **Where is my session stored, and who can see my messages?**
-The session is in the macOS Keychain, the Linux Secret Service or 1Password. The CLI talks to Telegram directly and has no analytics. The only other hosts are npm for a daily version check and the invite service at login. See [PRIVACY.md](PRIVACY.md).
+The session is in the macOS Keychain, the Linux Secret Service or 1Password. The CLI talks to Telegram directly and has no analytics. The only other hosts are npm for a daily version check and the login service when you log in with a login key. See [PRIVACY.md](PRIVACY.md).
 
 **Can I use several accounts?**
 Yes, with `TG_PROFILE`: each profile has its own login, config and Keychain items, for example `TG_PROFILE=work telegram auth --qr`. Switching accounts properly is tracked in [#5](https://github.com/TheVilfer/better-tg-cli/issues/5).
@@ -337,7 +338,7 @@ MCP Registry. See
 
 ## Privacy
 
-No analytics. The only service we run is the optional invite broker, which never sees your
+No analytics. The only service we run is the optional login service, which never sees your
 messages or session. See [PRIVACY.md](PRIVACY.md) for the three hosts the CLI talks to and what it
 stores locally.
 
@@ -351,8 +352,8 @@ Until then the Windows `telegram.exe` is unsigned; macOS binaries are ad-hoc sig
 
 - Committers and reviewers: [@TheVilfer](https://github.com/TheVilfer)
 - Approvers (each signed release): [@TheVilfer](https://github.com/TheVilfer)
-- Privacy policy: [PRIVACY.md](PRIVACY.md). The CLI talks only to Telegram, to the invite broker
-  when you log in with an invite, and to the npm registry for a daily update check in a terminal
+- Privacy policy: [PRIVACY.md](PRIVACY.md). The CLI talks only to Telegram, to the login service
+  when you log in with a login key, and to the npm registry for a daily update check in a terminal
   (off with `TG_NO_UPDATE_CHECK=1`).
 
 ## License

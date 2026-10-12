@@ -14,10 +14,10 @@ You need Node.js 20 or newer. Log in once, in your own terminal or through the g
 
 ```bash
 npm install -g better-tg-cli
-telegram onboard      # opens a local page: get an invite or use your own API keys, scan a QR code
+telegram onboard      # opens a local page: get a login key or use your own API keys, scan a QR code
 ```
 
-Claude never sees your login code, 2FA password, invite token or session. The session is stored in
+Claude never sees your login code, 2FA password, login key or session. The session is stored in
 the macOS Keychain, the Linux Secret Service, Windows DPAPI or 1Password.
 
 ## Safety
@@ -31,8 +31,8 @@ the macOS Keychain, the Linux Secret Service, Windows DPAPI or 1Password.
 The plugin runs on your machine. It connects to:
 
 - Telegram's own servers (MTProto), for everything a Telegram client does;
-- the project's invite service (`tg-cli-broker.login-c2d.workers.dev`, also `better-tg-cli.com`),
-  only when you log in with an invite, to exchange the invite for the app's API keys;
+- the project's login service (`tg-cli-broker.login-c2d.workers.dev`, also `better-tg-cli.com`),
+  only when you log in with a login key, to exchange it for the app's API keys;
 - `registry.npmjs.org`, once a day and only in an interactive terminal, to check for a newer version
   (turn off with `TG_NO_UPDATE_CHECK=1`).
 

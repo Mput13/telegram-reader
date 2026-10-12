@@ -8,8 +8,8 @@ import { errorMessage } from './text.js';
 
 /**
  * `telegram onboard`: a one-shot page on 127.0.0.1 where the person logs in, so an agent can start
- * the whole setup without ever seeing an invite token, API hash, QR code or 2FA password. The agent
- * runs the command; the human gets an invite (better-tg-cli.com hands it back here), scans the QR
+ * the whole setup without ever seeing a login key, API hash, QR code or 2FA password. The agent
+ * runs the command; the human gets a login key (better-tg-cli.com hands it back here), scans the QR
  * and types the password on the page.
  *
  * Any site in the same browser can send requests to 127.0.0.1, so the server answers only under a
@@ -40,7 +40,7 @@ export type OnboardEvent =
 
 export interface OnboardOptions {
   driver: LoginDriver;
-  /** Turns an invite token into app credentials (the broker); called once per session */
+  /** Turns a login key into app credentials (the broker); called once per session */
   redeemInvite(token: string): Promise<{ apiId: number; apiHash: string }>;
   /** Stores the finished login */
   save(session: string, creds: { apiId: number; apiHash: string }, invite: boolean): void;
