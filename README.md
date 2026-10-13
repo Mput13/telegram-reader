@@ -2,7 +2,7 @@
 
 Personal fork of [TheVilfer/better-tg-cli](https://github.com/TheVilfer/better-tg-cli), pinned to v0.37.0.
 
-The production MCP interface exposes only chats explicitly included in the Telegram folders **Lambda**, **NCSED** and **MAIL**. Folder membership is rechecked for each operation. Missing or duplicate folders, automatic category/exclusion rules, or an unresolved peer fail closed. Shared folders with explicit members are supported.
+The production MCP interface exposes only chats explicitly included in the Telegram folders **Lambda**, **NCSED** and **МАИ**. Folder membership is rechecked for each operation. Missing or duplicate folders, automatic category/exclusion rules, or an unresolved peer fail closed. Shared folders with explicit members are supported.
 
 ## MCP tools
 

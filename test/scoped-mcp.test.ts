@@ -12,7 +12,7 @@ import type { AddressInfo } from 'node:net';
 
 const profile = `mock-reader-security-${process.pid}`;
 process.env.TG_PROFILE = profile;
-const folders = () => ['Lambda', 'NCSED', 'MAIL'].map(title => ({ title, includePeers: [new Api.InputPeerUser({ userId: bigInt(12), accessHash: bigInt(1) })], excludePeers: [] }));
+const folders = () => ['Lambda', 'NCSED', 'МАИ'].map(title => ({ title, includePeers: [new Api.InputPeerUser({ userId: bigInt(12), accessHash: bigInt(1) })], excludePeers: [] }));
 const driver: ScopedDriver = {
   list: vi.fn(async () => [{ id: '12', title: 'Allowed' }]),
   read: vi.fn(async () => ['message']), search: vi.fn(async () => []), send: vi.fn(async () => ({ message_id: 1 })),
