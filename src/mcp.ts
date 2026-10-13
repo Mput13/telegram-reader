@@ -21,13 +21,13 @@ const MAX_OUTPUT = 100_000;
  * guarded write can never run through it even if this list is wrong. */
 export const READ_COMMANDS = new Set([
   'check', 'whoami', 'chats', 'read', 'get', 'info', 'topics', 'link', 'contacts', 'search',
-  'inbox', 'buttons', 'pinned', 'reactions', 'stories', 'inline', 'watch', 'contact', 'members',
+  'inbox', 'buttons', 'pinned', 'reactions', 'stories', 'watch', 'contact', 'members',
   'admins', 'groups', 'folders', 'folder', 'write-access',
 ]);
 
 /** Never over MCP: interactive logins, irreversible or self-updating commands, writes into other
  * agents' config (skill) and the server itself. */
-export const EXCLUDED_COMMANDS = new Set(['auth', 'logout', 'transfer-owner', 'update', 'skill', 'onboard', 'mcp', 'help-all']);
+export const EXCLUDED_COMMANDS = new Set(['auth', 'logout', 'transfer-owner', 'update', 'skill', 'onboard', 'mcp', 'help-all', 'inline', 'approve-send']);
 
 /** Commands registered on the CLI (set by index.ts); anything else is refused. */
 let knownCommands = new Set<string>();
@@ -112,6 +112,7 @@ export function planCall(tool: string, input: Record<string, unknown>): { argv: 
     return { argv: args as string[], readOnly: true };
   }
   if (READ_COMMANDS.has(cmd)) return `"${cmd}" is read-only; use telegram_read`;
+  if (!known) return `Unknown command "${cmd}"; see telegram_help`;
   const stdin = typeof input.stdin === 'string' ? input.stdin : undefined;
   return { argv: args as string[], readOnly: false, stdin };
 }

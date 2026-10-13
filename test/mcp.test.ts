@@ -99,16 +99,9 @@ describe.each([
 
     expect(code).toBe(0);
     expect(lines.map(l => l.id)).toEqual([1, 2, 3, 4, 5, 6]); // in order, nothing for the notification
-    expect(lines[1].result.tools.map((t: any) => t.name)).toEqual(['telegram_help', 'telegram_read', 'telegram_write']);
-    expect(lines[2].result.content[0].text).toMatch(/read <chat>/);
-    // Unconfigured profile has no write access: the guard refuses, reported as a tool error
-    expect(lines[3].result.isError).toBe(true);
-    expect(lines[3].result.content[0].text).toMatch(/Write access|secret store/);
-    // Full output survives process.exit right after the write
-    const direct = spawnSync(process.execPath, [CLI, 'help-all'], { encoding: 'utf8', env }).stdout.trimEnd();
-    expect(lines[4].result.content[0].text).toBe(direct);
-    // A real read on the unconfigured profile fails cleanly instead of hanging on a prompt
-    expect(lines[5].result.isError).toBe(true);
-    expect(lines[5].result.content[0].text).toMatch(/not configured|not authenticated|auth/i);
+    expect(lines[1].result.tools.map((t: any) => t.name)).toEqual(['telegram_list_chats', 'telegram_read', 'telegram_search', 'telegram_prepare_send', 'telegram_send_approved']);
+    // Legacy argv and helper surfaces are deliberately unavailable in the production endpoint.
+    for (const result of lines.slice(2)) expect(result.result.isError).toBe(true);
+    expect(lines[5].result.content[0].text).toMatch(/Unexpected argument|Missing chat_id/);
   }, 30_000);
 });

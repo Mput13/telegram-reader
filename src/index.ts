@@ -5,7 +5,8 @@ import { isMainThread } from 'node:worker_threads';
 import { VERSION } from './version.js';
 import { Command } from 'commander';
 import { isMock, profile } from './paths.js';
-import { startMcpServer } from './mcp.js';
+import { startScopedMcp } from './scoped-mcp.js';
+import { approveProposal } from './send-approval.js';
 import { mcpToken, startMcpHttpServer } from './mcp-http.js';
 import { BACKGROUND_CHECK_COMMAND, maybeNotifyUpdate, runBackgroundCheck } from './update.js';
 import {
@@ -167,14 +168,22 @@ program.addCommand(writeAccessCommand);
 program.addCommand(syncCommand);
 program.addCommand(downloadCommand);
 program.addCommand(updateCommand);
+updateCommand.hook('preAction', () => { throw new Error('Telegram Reader must be updated from its own reviewed fork; upstream auto-update is disabled.'); });
 program.addCommand(skillCommand);
+program.command('approve-send')
+  .description('Locally approve one exact prepared MCP message for a single send')
+  .argument('<request-id>')
+  .action(async (id: string) => {
+    try { await approveProposal(id); console.log('Approved for one attempt before the proposal expires.'); }
+    catch (e) { console.error(e instanceof Error ? e.message : 'Approval denied'); process.exitCode = 1; }
+  });
 program
   .command('mcp')
-  .description('Run as an MCP server over stdio, or over HTTP with --http (tools: telegram_help, telegram_read, telegram_write)')
+  .description('Run Telegram Reader MCP: selected folders only, typed tools, per-message local approval')
   .option('--http', 'Serve MCP over HTTP (POST /mcp, bearer token) for remote hosts such as Grok Bot')
   .option('--host <host>', 'With --http: address to listen on', '127.0.0.1')
   .option('--port <port>', 'With --http: port to listen on', '8787')
-  .option('--read-only', 'Serve only telegram_help and telegram_read, never telegram_write')
+  .option('--read-only', 'Expose only scoped list, read and search tools')
   .option('--token', 'Print the HTTP bearer token (created on first use, kept in the secret store)')
   .option('--rotate-token', 'Replace the HTTP bearer token; clients using the old one stop working')
   .action((options: { http?: boolean; host: string; port: string; readOnly?: boolean; token?: boolean; rotateToken?: boolean }) => {
@@ -197,7 +206,7 @@ program
       startMcpHttpServer(commands, { host: options.host, port, readOnly: options.readOnly });
       return;
     }
-    startMcpServer(commands, { readOnly: options.readOnly });
+    startScopedMcp({ readOnly: options.readOnly });
   });
 
 // Dense reference of every command and flag, generated from the definitions

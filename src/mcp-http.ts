@@ -1,6 +1,7 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { handleMessage, setKnownCommands } from './mcp.js';
+import { handleScopedMessage } from './scoped-mcp.js';
 import { isSecretStoreAvailable, secretGet, secretSet } from './secrets.js';
 
 /**
@@ -102,7 +103,11 @@ export function createRpcProcessor(options: { readOnly?: boolean } = {}, run?: P
         continue;
       }
       try {
-        const reply = await serial(() => handleMessage(msg, run, { readOnly: options.readOnly }));
+        // Production uses typed scoped tools. The legacy runner remains injectable
+        // only for offline transport tests; it is never passed by the CLI.
+        const reply = await serial(() => run
+          ? handleMessage(msg, run, { readOnly: options.readOnly })
+          : handleScopedMessage(msg, { readOnly: options.readOnly }));
         if (msg.method === 'tools/call') logCall(msg, (reply as { result?: { isError?: boolean } })?.result?.isError ? 'error' : 'ok');
         if (reply) replies.push(reply);
       } catch (e) {
